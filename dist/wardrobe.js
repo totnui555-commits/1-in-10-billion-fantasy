@@ -10,7 +10,7 @@ const Wardrobe=(()=>{
  function identity(s,m=null){let n=hash((s.seed||0)^((m?.race??s.race??0)+1)*65537);for(const ch of (m?.name||m?.id||'self'))n=hash(n^ch.charCodeAt(0));const l=m?.look||s.look||{};return hash(n^(l.hair||0)*131^(l.coat||0)*8191^(l.eyes||0)*31)}
  function style(s,m=null){const key=identity(s,m);if(cache.has(key))return cache.get(key);const at=n=>hash(key+n*104729),v={key,palette:at(1)%48,cut:at(2)%36,hair:at(3)%32,hairColor:at(4)%20,pattern:at(5)%20,accessory:at(6)%24,hat:at(7)%18,mark:at(8)%16,detail:at(9)%8,lower:at(10)%12,boots:at(11)%8,sleeves:at(12)%8,mantle:at(13)%12,accent:at(14)%48};if(cache.size>=1024)cache.clear();cache.set(key,v);return v}
  const uniforms={mage:[4,12,18,24,30],guard:[7,13,19,25,31],farmer:[2,14,20,26,32],craft:[6,15,21,27,33],traveler:[9,16,22,28,34],priest:[4,17,23,29,35],merchant:[1,5,12,18,26],artist:[3,8,17,24,28],healer:[6,14,23,29,35],sailor:[3,10,16,21,32],scholar:[4,11,18,22,30],cook:[6,15,20,27,33]};
- function role(s,m,age){if(age<18)return 'casual';const label=m?.occupation||(Number.isInteger(s.job)?JOBS[s.job]?.[0]:'')||'';return /เวท|อาคม|พยากรณ์|คาถา|นักปราชญ์/.test(label)?'mage':/อัศวิน|ทหาร|องครักษ์|นักรบ|ยาม|ผู้กล้า/.test(label)?'guard':/เกษตร|ชาวนา|ชาวไร่|สวน|เลี้ยงสัตว์/.test(label)?'farmer':/นักบวช|นักพรต|ศาสนา/.test(label)?'priest':/รักษา|แพทย์|พยาบาล|หมอ|สมุนไพร/.test(label)?'healer':/เรือ|ประมง|ทะเล/.test(label)?'sailor':/ดนตรี|นักร้อง|ศิลปิน|วาด|นักเต้น|ละคร/.test(label)?'artist':/พ่อค้า|แม่ค้า|นายหน้า|ธนาคาร|บัญชี/.test(label)?'merchant':/ครัว|ปรุง|ขนม|อบอาหาร/.test(label)?'cook':/ช่าง|ตีเหล็ก|เหมือง/.test(label)?'craft':/นักผจญภัย|พราน|สำรวจ|เดินทาง/.test(label)?'traveler':/อาจารย์|ครู|บรรณารักษ์|อักษร|นักวิจัย/.test(label)?'scholar':'casual'}
+ function role(s,m,age){if(age<16)return 'casual';const assigned=typeof Workwear==='undefined'?null:Workwear.category(s,m,age);if(assigned)return assigned;const label=(m?m.occupation:(Number.isInteger(s.job)?JOBS[s.job]?.[0]:''))||'';return /เวท|อาคม|พยากรณ์|คาถา|นักปราชญ์/.test(label)?'mage':/อัศวิน|ทหาร|องครักษ์|นักรบ|ยาม|ผู้กล้า/.test(label)?'guard':/เกษตร|ชาวนา|ชาวไร่|สวน|เลี้ยงสัตว์/.test(label)?'farmer':/นักบวช|นักพรต|ศาสนา/.test(label)?'priest':/รักษา|แพทย์|พยาบาล|หมอ|สมุนไพร/.test(label)?'healer':/เรือ|ประมง|ทะเล/.test(label)?'sailor':/ดนตรี|นักร้อง|ศิลปิน|วาด|นักเต้น|ละคร/.test(label)?'artist':/พ่อค้า|แม่ค้า|นายหน้า|ธนาคาร|บัญชี/.test(label)?'merchant':/ครัว|ปรุง|ขนม|อบอาหาร/.test(label)?'cook':/ช่าง|ตีเหล็ก|เหมือง/.test(label)?'craft':/นักผจญภัย|พราน|สำรวจ|เดินทาง/.test(label)?'traveler':/อาจารย์|ครู|บรรณารักษ์|อักษร|นักวิจัย/.test(label)?'scholar':'casual'}
  function cutFor(s,m,age){const v=style(s,m),pool=uniforms[role(s,m,age)];return age<12?[0,1,2,3,5,8,10,14,17,20,24,26,32][v.cut%13]:pool?pool[v.cut%pool.length]:v.cut}
  // The birth realm supplies a woven motif; moving does not change one's clothes.
  function culture(s){return Math.abs(s.homeKingdom??s.kingdom??0)%16}
@@ -134,6 +134,7 @@ const Wardrobe=(()=>{
   if(v.accessory===21){box(c,20,26,4,5,dark);box(c,21,27,2,2,trim)}
   if(v.accessory===22){box(c,6,17,12,1,trim);box(c,7,18,10,1,dark);box(c,9,19,6,1,trim)}
   if(v.accessory===23){box(c,17,20,5,10,dark);box(c,18,21,3,8,base);box(c,18,22,3,1,trim);box(c,18,28,3,1,trim)}
+  if(typeof Workwear!=='undefined')Workwear.uniform(c,s,m,age);
   if((s.rank||0)>=5&&age>=18){box(c,5,17,1,9,trim);box(c,18,17,1,9,trim);box(c,12,20,2,2,'#d1b16d')}
  }
  // Rear layers are drawn before the body, preserving arms, tails and wing outlines.
@@ -185,7 +186,7 @@ const Wardrobe=(()=>{
   if(h===31){b(3,1,18,4);b(3,5,3,10);b(18,5,3,10);b(1,14,5,5);b(19,14,5,5);b(2,18,4,2,colors(v)[1]);b(20,18,4,2,colors(v)[1])}
   if(age>=40&&age<60){b(4,5,2,4,'#acaaa0');b(18,5,2,4,'#acaaa0')}
  }
- function headwear(c,s,m,age,race){if(age<4||![0,1,2,3,4,11,12,26,27].includes(race))return;const v=style(s,m),[base,trim,dark]=colors(v),r=role(s,m,age),hat=age<12?[0,1,2,5,6,8,11,15][v.hat%8]:r==='farmer'?[1,8,12,15][v.hat%4]:r==='guard'?[3,9,13,17][v.hat%4]:r==='mage'?[4,10,14,16][v.hat%4]:v.hat;
+ function headwear(c,s,m,age,race){if(age<4||![0,1,2,3,4,11,12,26,27].includes(race))return;const v=style(s,m),[base,trim,dark]=colors(v),r=role(s,m,age),hatDefault=age<12?[0,1,2,5,6,8,11,15][v.hat%8]:r==='farmer'?[1,8,12,15][v.hat%4]:r==='guard'?[3,9,13,17][v.hat%4]:r==='mage'?[4,10,14,16][v.hat%4]:v.hat,hat=typeof Workwear==='undefined'?hatDefault:Workwear.hats(s,m,age,hatDefault);
   if(hat===1){box(c,0,1,24,3,trim);box(c,5,-3,14,4,base);box(c,6,0,12,1,dark)}
   if(hat===2){box(c,3,0,18,3,dark);box(c,6,-3,12,3,base);box(c,18,2,5,2,dark)}
   if(hat===3){box(c,4,-1,16,5,'#879791');box(c,11,-3,3,5,trim);box(c,4,3,2,5,dark);box(c,18,3,2,5,dark)}

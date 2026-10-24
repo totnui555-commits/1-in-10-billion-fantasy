@@ -47,6 +47,7 @@ function drawUnusual(c,x,y,scale,s,age,race,look,member=null){
   const sway=Math.round(Math.sin(sceneTime*2)*2);rect(c,8,0+sway,3,7,'#c0b68c');rect(c,0,7+sway,27,3,'#697b70');rect(c,3,10+sway,21,21,'#d5c58e');rect(c,6,13+sway,15,15,'#ead9a4');rect(c,0,31+sway,27,3,'#697b70');rect(c,8,34+sway,2,3,'#b9d1af');rect(c,18,34+sway,2,3,'#b9d1af');rect(c,8,18+sway,2,3,'#58685a');rect(c,17,18+sway,2,3,'#58685a');poly(c,[[4,34+sway],[2,43+sway],[10,37+sway]],'#a9c3ac');poly(c,[[21,34+sway],[25,43+sway],[15,37+sway]],'#a9c3ac');
  }
  Wardrobe.native(c,s,member,age,race);
+ Workwear.equipment(c,s,member,age,race);
  c.restore();return true;
 }
 function drawCompanion(c,x,y,scale,pet){
@@ -119,6 +120,7 @@ function drawFrontier(c,x,y,scale,s,age,race,look,member=null){
  }
  if(p.stage==='elder'&&(typeof Ecology==='undefined'||Ecology.profile(race).grasp)){rect(c,24,24,2,13,'#7f7257');rect(c,22,23,5,2,'#7f7257')}
  Wardrobe.native(c,s,member,age,race);
+ Workwear.equipment(c,s,member,age,race);
  c.restore();return true;
 }
 
@@ -143,6 +145,7 @@ function drawEcologyBody(c,x,y,scale,s,age,race,look,member=null){
   for(let i=0;i<4;i++)rect(c,-4+i*10,32+(beat+i)%4,2,2,race===22?'#d6b890':race===32?'#d6c197':light);
  }
  Wardrobe.native(c,s,member,age,race);
+ Workwear.equipment(c,s,member,age,race);
  c.restore();return true;
 }
 
@@ -210,6 +213,7 @@ function drawPerson(c,x,y,scale,s,age=30,member=null){
   if((look.coat||0)%3===1)poly(c,[[3,18],[-2,29],[4,29],[8,22]],'#92764c');
   if(elder){rect(c,24,23,2,14,'#806747');rect(c,21,22,5,2,'#806747');rect(c,8,11,1,1,'#9c8877');rect(c,18,11,1,1,'#9c8877')}
  }
+ if(!infant)Workwear.equipment(c,s,member,age,race);
  c.restore();
 }
 function stars(c,seed,night){for(let i=0;i<18;i++){const x=mix(seed+i*31)%475,y=8+mix(seed+i*73)%54;rect(c,x,y,2,2,night?'#e8d9aa':'#f2ead1') }}
@@ -438,7 +442,7 @@ function drawScene(canvas,s,time=0){
  if(!s.sceneOnly){const specificGuest=s.calendar?.pending&&typeof VisualMemory!=='undefined'?VisualMemory.actor(s,s.event?.context):moment?.guest||moment?.visual?.guest||null;const title=f.title||'',family=household(s).filter(m=>m.alive&&(!['river-sanctuary','reef-home','open-ocean'].includes(scene.environment)||Ecology.profile(m.race).water)),bio=Engine.biological(s),isHome=['nursery','bedroom','kitchen','study','music','garden',...(typeof Ecology!=='undefined'?Ecology.nativeScenes:[])].includes(scene.environment);let kin=[];
  if(isHome){if(/รัก|คู่ชีวิต|ชา|แต่งงาน/.test(title))kin=[family.find(m=>m.id==='partner')||family[0]].filter(Boolean);else if(/ลูก|เด็กของคุณ/.test(title))kin=family.filter(m=>m.id.startsWith('child-')).slice(0,2);else kin=family.filter(m=>!m.id.startsWith('partner')&&!m.id.startsWith('child-')).slice(0,2)}
  if(isHome&&specificGuest){const known=family.find(m=>m.name===specificGuest.name);if(known&&!kin.includes(known))kin=[kin[0],known].filter(Boolean)}kin.forEach((m,i)=>drawPerson(c,160+i*29,121,1.02,{...s,race:m.race,look:m.look},memberAge(s,m),m));
- if(bio>=4&&!s.dead&&(!['river-sanctuary','reef-home','open-ocean'].includes(scene.environment)||!specificGuest||Ecology.profile(specificGuest.race).water)&&(specificGuest&&!kin.some(m=>m.name===specificGuest.name)||!isHome&&['classroom','market','guild','barracks','council','clinic','border','workshop'].includes(scene.environment))){const guest={...s,job:null,race:specificGuest?.race??s.race,look:specificGuest?.look||{hair:(s.seed+12)%5,coat:(s.seed>>>6)%8,eyes:(s.seed>>>9)%3}};drawPerson(c,287,119,1.12,guest,specificGuest?.age??(scene.environment==='classroom'?Math.max(5,Math.min(17,bio)):30),specificGuest||{name:'ผู้สัญจร',look:guest.look,race:guest.race})}
+ if(bio>=4&&!s.dead&&(!['river-sanctuary','reef-home','open-ocean'].includes(scene.environment)||!specificGuest||Ecology.profile(specificGuest.race).water)&&(specificGuest&&!kin.some(m=>m.name===specificGuest.name)||!isHome&&['classroom','market','guild','barracks','council','clinic','border','workshop'].includes(scene.environment))){const guest={...s,job:null,race:specificGuest?.race??s.race,look:specificGuest?.look||{hair:(s.seed+12)%5,coat:(s.seed>>>6)%8,eyes:(s.seed>>>9)%3}};drawPerson(c,287,119,1.12,guest,specificGuest?.age??(scene.environment==='classroom'?Math.max(5,Math.min(17,bio)):30),family.find(m=>m.name===specificGuest?.name)||specificGuest||{name:'ผู้สัญจร',look:guest.look,race:guest.race})}
  const walking=!s.dead&&bio>=4&&['border','mountain','snowpass','forest','ruins'].includes(scene.environment),step=walking?Math.round(Math.sin(time*.75)*(bio>=60?7:13)):0;
  if(s.dead)drawRemembrance(c,219,139,1.3);else drawPerson(c,213+step,109,1.75,s,bio);
  if(s.pet)drawPet(c,266+step,149,1.05,s.pet);

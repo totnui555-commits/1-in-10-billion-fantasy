@@ -43,6 +43,11 @@ The wardrobe now has 36 garment cuts, 48 palettes, 32 hairstyles, 20 hair colors
 
 Checks cover every component selector, all profession pools, 72 species at seven ages, historical image stability and no changes to save data or story randomness. Chromium checked all 72 portraits and mobile/desktop layouts. No external art assets or additional network requests were introduced.
 
+## Profession clothing (v24)
+All 123 professions now have explicit workwear assignments. Smiths, tailors, healers, alchemists, farmers, musicians, guards, teachers, couriers, cartographers and other work families have practical overlays, headwear and compact tools. Changing careers updates clothing immediately while retaining the character's derived palette and hair. A vacant or unknown NPC occupation no longer inherits the player's profession. Equipment is visual only and grants no inventory, combat or financial benefits. Native bodies without suitable hands retain their anatomy and do not receive human handheld equipment.
+
+Historical player outfits use the recorded job; family outfits use recorded occupations. Known guest portraits now retain a bounded optional occupation field, compatible with older snapshots. Checks cover all 123 mappings, outfit changes, unchanged appearance identity, historical images, and real career-menu changes through reload in Chromium.
+
 ## Saves
 Autosave uses IndexedDB, with the current life backed up in localStorage. JSON export/import supports device migration and backup. Saves are validated; event definitions are restored from trusted bundled data. No cloud save, user accounts, shared world, online memorial, server-authoritative scoreboard, or analytics. Users control their own saves; this is a single-player game, not an anticheat architecture.
 

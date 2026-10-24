@@ -11,9 +11,9 @@ const VisualMemory=(()=>{
   const active=s.projects?.active,who=context.npc||active?.cast?.name;if(typeof who!=='string'||!who||who.length>=100)return null;
   const member=(s.household?.members||[]).find(m=>m.alive&&m.name===who&&(m.id===context.relativeId||m.id===active?.cast?.memberId));
   let seed=s.seed>>>0;for(const ch of who)seed=Math.imul(seed^ch.charCodeAt(0),16777619)>>>0;
-  return {name:who,race:member?.race??(integer(context.npcRace,0,RACES.length-1)?context.npcRace:active?.id==='goblin-treaty'?0:s.race),look:member?look(member.look):{hair:seed%6,coat:(seed>>>4)%8,eyes:(seed>>>8)%3},age:member?Engine.ageEquivalent(FamilyWorld.age(s,member),member.race):finite(context.npcAge,0,10000)?context.npcAge:30};
+  return {name:who,occupation:member?.occupation||'',race:member?.race??(integer(context.npcRace,0,RACES.length-1)?context.npcRace:active?.id==='goblin-treaty'?0:s.race),look:member?look(member.look):{hair:seed%6,coat:(seed>>>4)%8,eyes:(seed>>>8)%3},age:member?Engine.ageEquivalent(FamilyWorld.age(s,member),member.race):finite(context.npcAge,0,10000)?context.npcAge:30};
  }
- function validGuest(g){return g===null||g===undefined||!!g&&smallText(g.name)&&integer(g.race,0,RACES.length-1)&&validLook(g.look)&&finite(g.age,0,10000)}
+ function validGuest(g){return g===null||g===undefined||!!g&&smallText(g.name)&&(g.occupation===undefined||smallText(g.occupation,200))&&integer(g.race,0,RACES.length-1)&&validLook(g.look)&&finite(g.age,0,10000)}
  function capture(s,e){
   e.visual={version:1,ecology:s.ecology?{mode:s.ecology.mode,learning:s.ecology.learning}:undefined,guest:e.guest||(e.kind==='project'?actor(s):null),race:s.race,kingdom:s.kingdom,rank:s.rank,age:s.age,quarter:s.calendar?.quarter||0,seed:s.seed,look:look(s.look),job:s.job,dead:!!s.dead,
    pet:s.pet?{name:s.pet.name,bond:s.pet.bond,speciesId:s.pet.speciesId||null,health:s.pet.health??85,trained:s.pet.trained??0}:null,
