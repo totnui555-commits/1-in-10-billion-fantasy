@@ -1,0 +1,27 @@
+'use strict';
+const Autoplay=(()=>{
+const SPEEDS=[1,2,4,8,12,16],PACES=[5,30,60,90];
+function preferences(r={}){return {auto:r.auto===true,speed:SPEEDS.includes(r.speed)?r.speed:1,minutes:PACES.includes(r.minutes)?r.minutes:30,style:['balanced','safe','ambitious','kind'].includes(r.style)?r.style:'balanced',reading:[7,14,22].includes(r.reading)?r.reading:14}}
+function choose(s,style='balanced'){if(s.event.humanPickPath&&typeof HumanOrigins!=='undefined'){const id=HumanOrigins.preferredPath(s,style),i=s.event.choices.findIndex(c=>c.humanPath===id);if(i>=0)return i}const mood=s.lifeChoices?.temperament;const preference={gentle:{bond:1.5,joy:.25},ambitious:{fame:1.4,magic:.2},curious:{wisdom:1.3,magic:.4},bold:{power:1.2,fame:.3},reflective:{health:1.4,joy:.6}}[mood]||{};let best=-1,score=-Infinity;s.event.choices.forEach((c,i)=>{let v=0,x=c.effect;if(x.gold<0&&s.gold+x.gold<0)return;for(const k of Engine.stats)v+=(x[k]||0)*(k==='health'&&s.health<40?3:k==='bond'&&style==='kind'?2:k===s.focus?1.8:1)+(x[k]||0)*(preference[k]||0);v+=(x.gold||0)*.2-(c.risk||0)*(style==='safe'?60:15);if(x.gold<0&&s.gold+x.gold<10)v-=20;if(x.flag&&!s.flags[x.flag])v+=5;if(x.partner&&!s.partner)v+=5;if(v>score){score=v;best=i}});return best}
+function readSeconds(s){return Math.max(8,Math.min(18,(s.event.text.length+s.event.choices.map(c=>c.label).join('').length)/18))}
+function maintain(s,p){if(!s.focusOwned)s.focus=s.health<40?'health':p.style==='kind'?'bond':p.style==='ambitious'?'magic':'wisdom';if(s.job===null&&Engine.biological(s)>=16){let jobs=JOBS.map((j,i)=>({j,i})).filter(({j,i})=>s[j[1]]>=j[2]&&(typeof Livelihood==='undefined'||Livelihood.canCareer(s,i)));if(typeof HumanOrigins!=='undefined')jobs=HumanOrigins.jobs(s,jobs);if(typeof Ecology!=='undefined')jobs=Ecology.autoJobs(s,jobs);if(jobs.length)Engine.career(s,jobs.sort((a,b)=>b.j[3]-a.j[3])[0].i)}}
+function create(hooks,raw){let prefs=preferences(raw),paused=false,last=null,elapsed=0,decisionTime=0,selected=-1;
+// Reading preference changes the chosen life pace modestly. Every delay uses the
+// same simulated seconds, so no unscaled reading hold can cap a speed setting.
+function quarterSeconds(s){const readingScale=1+(prefs.reading-14)/35;return prefs.minutes*60/(RACES[s.race][2]*4)*readingScale}
+function reset(){last=null;elapsed=0;decisionTime=0;selected=-1}
+function status(){const s=hooks.state(),c=Simulation.ensure(s);const kind=!s.accepted?'birth':s.dead?'ended':paused?'paused':hooks.blocked()?'away':s.outcome?'outcome':c.pending?(prefs.auto?'decision':'waiting'):'journey';const base=s.outcome?5:c.pending?readSeconds(s):quarterSeconds(s),spent=s.outcome||c.pending?decisionTime:elapsed,progress=Math.max(0,Math.min(1,spent/base));return {kind,paused,prefs:{...prefs},selected,elapsed:spent/prefs.speed,duration:base/prefs.speed,progress,yearsProgress:(c.quarter+(!c.pending&&!s.outcome?progress:0))/4,remaining:Math.max(0,base-spent)/prefs.speed,readHold:0,month:c.quarter*3+1}}
+function tick(dt){const s=hooks.state();if(!s.accepted||s.dead||paused||hooks.blocked())return;dt=Number.isFinite(dt)?Math.max(0,Math.min(1,dt)):0;if(!dt)return;const c=Simulation.ensure(s),advance=dt*prefs.speed;
+if(s.outcome){decisionTime+=advance;if(decisionTime>=5){s.outcome=null;decisionTime=0;selected=-1;if(prefs.auto)maintain(s,prefs);hooks.changed()}return}
+if(c.pending){if(!prefs.auto)return;if(selected<0)selected=choose(s,prefs.style);decisionTime+=advance;if(decisionTime>=readSeconds(s)&&selected>=0&&Simulation.choose(s,selected)){s.autoDecisions=(s.autoDecisions||0)+1;if(s.dead)hooks.finish();decisionTime=0;selected=-1;hooks.changed()}return}
+elapsed+=advance;const duration=quarterSeconds(s);let steps=0,changed=false;
+// Keep the unused fraction and catch up several quarters at fast speeds. Stop
+// at the first decision or result; a manual question never consumes more time.
+while(elapsed+1e-9>=duration&&steps<64&&!s.dead&&!c.pending&&!s.outcome){elapsed=Math.max(0,elapsed-duration);if(!Simulation.nextQuarter(s))break;steps++;changed=true;if(prefs.auto)maintain(s,prefs);if(c.pending||s.outcome){elapsed=0;decisionTime=0;selected=-1;break}}
+if(s.dead)hooks.finish();if(changed)hooks.changed()}
+function frame(now){if(last===null){last=now;return}const dt=(now-last)/1000;last=now;tick(dt)}
+function set(patch){const wasAuto=prefs.auto;prefs=preferences({...prefs,...patch});last=null;if(wasAuto!==prefs.auto){decisionTime=0;selected=-1}hooks.preferences(prefs);hooks.changed()}
+function pause(){paused=!paused;last=null;hooks.changed()}
+function skip(){const s=hooks.state();if(!s.accepted||s.dead||s.calendar.pending)return;if(s.outcome)s.outcome=null;for(let i=0;i<512&&!s.calendar.pending&&!s.dead;i++)Simulation.nextQuarter(s);if(s.dead)hooks.finish();reset();hooks.changed()}
+return {frame,tick,status,set,pause,reset,skip,speeds:SPEEDS,get prefs(){return {...prefs}}}}
+return {create,choose,maintain,readSeconds,preferences};})();
