@@ -33,6 +33,11 @@ Original Thai-language fantasy life simulator. Vanilla HTML/CSS/JavaScript with 
 ## Current gameplay (v21)
 72 playable races, 16 kingdoms, 8 social origins, 123 professions, 15 businesses, 36 companion species, 45 purchasable props, 12 long-term projects, 1,056 canonical choice events and 768 pixel scene configurations. Named households, species-specific growth, annual focus, local social standing, cross-species relations, death/rebirth and a searchable illustrated diary persist in browser-local saves. Content is authored and finite; rare contexts and long lives can still repeat.
 
+## Character wardrobes (v22)
+Deterministic pixel wardrobes combine 24 palettes, 12 garment cuts, 16 hairstyles, 12 hair colors, 8 textile patterns, 8 accessory variants and 8 headwear selectors. Profession groups select practical clothes (aprons, armor, robes and travel layers), children retain age-appropriate options, and high status adds small trim details. Horns, ears and species silhouettes remain visible. Non-clothed bodies vary through small scale/wing/root/core markings rather than human outfits. Selection is derived from existing identity data; it consumes no story RNG and adds no save fields. Family, guest and diary portraits use the same identity recipe. Existing saves receive the expanded rendering automatically.
+
+Validation: 10,000 sampled human appearance combinations were distinct, as were 512 rendered human samples; this is a sample result, not a global uniqueness guarantee. All 72 bodies render at seven ages; player and family historical snapshots retain their identity. Real Chromium checked all 72 portraits and 320/390/768/1366 layouts. Run `node scripts/check-wardrobe.cjs` for deterministic rendering and save checks.
+
 ## Saves
 Autosave uses IndexedDB, with the current life backed up in localStorage. JSON export/import supports device migration and backup. Saves are validated; event definitions are restored from trusted bundled data. No cloud save, user accounts, shared world, online memorial, server-authoritative scoreboard, or analytics. Users control their own saves; this is a single-player game, not an anticheat architecture.
 

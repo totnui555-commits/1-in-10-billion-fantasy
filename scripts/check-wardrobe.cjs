@@ -1,0 +1,10 @@
+'use strict';
+const fs=require('fs'),vm=require('vm'),assert=require('assert'),crypto=require('crypto'),path=require('path'),root=path.resolve(__dirname,'..'),cx=vm.createContext({console});
+for(const f of JSON.parse(fs.readFileSync(path.join(root,'client-manifest.json'))).scripts.filter(f=>f!=='app.js'))vm.runInContext(fs.readFileSync(path.join(root,'dist',f),'utf8'),cx,{filename:f});
+const {E,I,W,V}=vm.runInContext('({E:Engine,I:Illustration,W:Wardrobe,V:VisualMemory})',cx);
+function commands(s,age,m=null){const calls=[],c=new Proxy({},{get:(o,k)=>k in o?o[k]:(...a)=>calls.push([k,o.fillStyle,...a]),set:(o,k,v)=>(o[k]=v,true)});I.drawPerson(c,20,10,2,s,age,m);return JSON.stringify(calls)}
+const combinations=new Set(),rendered=new Set();let draws=0;
+for(let seed=1;seed<=10000;seed++){const s=E.create(seed);s.race=0;s.job=null;s.rank=1;const before=JSON.stringify(s),v=W.style(s);combinations.add(JSON.stringify({...v,key:0}));if(seed<=512){rendered.add(crypto.createHash('sha256').update(commands(s,30)).digest('hex'));draws++;assert.equal(commands(s,30),commands(E.hydrate(JSON.parse(JSON.stringify(s))),30));assert.deepEqual(W.style({...s,kingdom:15,rank:7,job:9}),v);const e={};V.capture(s,e);const historical=V.read(s,e);assert.equal(commands(s,30),commands(historical,30));const m=s.household.members[0];assert.equal(commands(s,30,m),commands(historical,30,historical.household.members[0]));assert.notEqual(W.identity(s),W.identity(s,m));}assert.equal(JSON.stringify(s),before,'renderer mutated story or save')}
+assert(combinations.size>9950,combinations.size);assert.equal(rendered.size,512);
+for(let race=0;race<72;race++)for(const age of [0,.5,3,10,17,25,70]){const s=E.create(race+70);s.race=race;assert(commands(s,age).length>200);draws++}
+console.log(JSON.stringify({pass:true,sample:10000,distinctCombinations:combinations.size,distinctHumanRenders:rendered.size,draws,checks:['all72 bodies at7 ages','stable identity after save/reload and travel','historical player and family snapshots','no save or story RNG mutations']}));
