@@ -53,7 +53,7 @@ function ensure(s){
 }
 function careerChanged(s,oldJob){const l=ensure(s);if(s.job===oldJob&&l.job===s.job)return false;const previous=l.level;l.job=s.job;l.tenure=0;l.proficiency=previous>0?Math.min(20,previous*4):0;l.level=0;l.changes++;history(s,(s.job===null?'พักจากงานประจำ':'เริ่มอาชีพ '+JOBS[s.job][0])+(oldJob!==null&&JOBS[oldJob]?' หลังทำงานเป็น'+JOBS[oldJob][0]:''));return true}
 function canCareer(s,index){
- const j=JOBS[index],age=bio(s);if(typeof Ecology!=='undefined'&&!Ecology.allowedCareer(s,index))return false;if(!j||s.dead||age<16||!Number.isFinite(s[j[1]])||s[j[1]]<j[2])return false;
+ const j=JOBS[index],age=bio(s);if(typeof RaceDrives!=='undefined'&&RaceDrives.cashless(s))return false;if(typeof Ecology!=='undefined'&&!Ecology.allowedCareer(s,index))return false;if(!j||s.dead||age<16||!Number.isFinite(s[j[1]])||s[j[1]]<j[2])return false;
  const school=s.growth?.education||'home',studied=school==='academy'||school==='apprentice'||!!s.flags?.academy;
  const stages={15:21,4:22,10:22,11:21,12:28,14:25,19:28,20:28,21:35,23:19,28:20,34:20,35:19,36:19,40:22,43:24};
  const addedMinimum=typeof ContentExpansion!=='undefined'?ContentExpansion.jobMinimumAges?.[index]:null;if(age<(addedMinimum||stages[index]||16))return false;const addedRule=typeof ContentExpansion!=='undefined'?ContentExpansion.jobRequirements?.[index]:null;if(addedRule?.formal&&!studied&&s.wisdom<j[2]+10)return false;

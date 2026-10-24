@@ -49,6 +49,10 @@
     "world-timeline.js",
     "economy.js",
     "epoch-controls.js",
+    "race-drives.js",
+    "faith-lore.js",
+    "faith-world.js",
+    "belief-controls.js",
     "app.js"
   ],
   "styles": [
@@ -63,6 +67,7 @@
     "frontier-world.css",
     "human-legacy.css",
     "ecology.css",
-    "epoch.css"
+    "epoch.css",
+    "belief.css"
   ]
 }

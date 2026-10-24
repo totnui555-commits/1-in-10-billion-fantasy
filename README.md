@@ -30,8 +30,8 @@ This repository starts from the published v19 game. Hosting account configuratio
 
 Original Thai-language fantasy life simulator. Vanilla HTML/CSS/JavaScript with runtime pixel animation and no gameplay API. Run `python scripts/build-client.py` after source changes, then serve `dist/` on a static web server or CDN. No external game assets or API keys are required.
 
-## Current gameplay (v20)
-72 playable races, 16 kingdoms, 8 social origins, 123 professions, 15 businesses, 36 companion species, 45 purchasable props, 12 long-term projects, 957 canonical choice events and 768 pixel scene configurations. Named households, species-specific growth, annual focus, local social standing, cross-species relations, death/rebirth and a searchable illustrated diary persist in browser-local saves. Content is authored and finite; rare contexts and long lives can still repeat.
+## Current gameplay (v21)
+72 playable races, 16 kingdoms, 8 social origins, 123 professions, 15 businesses, 36 companion species, 45 purchasable props, 12 long-term projects, 1,056 canonical choice events and 768 pixel scene configurations. Named households, species-specific growth, annual focus, local social standing, cross-species relations, death/rebirth and a searchable illustrated diary persist in browser-local saves. Content is authored and finite; rare contexts and long lives can still repeat.
 
 ## Saves
 Autosave uses IndexedDB, with the current life backed up in localStorage. JSON export/import supports device migration and backup. Saves are validated; event definitions are restored from trusted bundled data. No cloud save, user accounts, shared world, online memorial, server-authoritative scoreboard, or analytics. Users control their own saves; this is a single-player game, not an anticheat architecture.
@@ -225,3 +225,30 @@ Each arc warns one year before its first strike, lasts two or three years, and r
 World effects change regional prices, work, supply shocks and danger, including different exposure for aquatic, undead/construct and demon races. News, threats, past-year records and actual policy decisions are saved. The world calendar is a browser-local simulation; this update does not introduce a networked multiplayer world.
 
 Run the dependency-free economic/world regressions with `node scripts/check-world-economy.cjs`, and the72-race lifetime/save stress sweep with `node scripts/check-lifetimes.cjs`. The focused suite checks288 race/crisis combinations, all nine invasion-policy branches across three offices, distinct defensive powers, money conservation, quarterly locks, long-lived wages, migrations and malformed saves. Chromium QA covers the ledger, budgets, spending links, debt/side work,16 regional reports, ruler policy changes, reloads and320/390/768/1366 layouts. These checks do not establish production concurrency capacity.
+
+
+## Species drives and embodied faith — v21
+
+All72 races now have an authored ambition, an inherited tension, and three optional interpretations: follow the inherited path, seek coexistence, or choose an independent direction. These are pressures rather than a moral alignment assigned at birth. A kelpie can defend a hunting pool or protect crossings; a dragon can expand territory, negotiate with goblins, or leave the ancestral hoard. Spores, roots, shadows, constructs and predatory bodies receive different desires, kin terms, sensations and native narrative pages. Choosing a direction gives no money/stats and may change once per world year. An annual-focus shortcut connects these aspirations to existing practical plans. NPC native dreams also draw from their own race's three paths instead of sharing the same domestic dream.
+
+Nine fictional faiths have named, physically present deities or founders:
+
+| Faith | Divine actor | Central conflict |
+| --- | --- | --- |
+|Dawn goddess|Aurelia|Sanctuary for all races versus exclusive protection|
+|First demon / black oath|Azrakel|Free captive demon souls versus dismantling a human city's defenses|
+|Ascended human god|Kael|Human security versus the rights of existing forest inhabitants|
+|Root mother|Verantha|Restore root water versus the people depending on a dam|
+|Ocean memory|Neria|Protect spawning grounds versus shipments of medicine|
+|First forge / free cores|Urdum|Military defense versus a newly awakened construct's consent|
+|Ancestral wing|Archeion|Restore dragon nesting territory versus goblin livelihoods|
+|Hunter moon|Raum|Feed predators versus hunting beyond necessity|
+|Unowned memory|Ishra|Break lich control versus spirits' choice to stay or leave|
+
+Every race can follow any faith or remain unaffiliated. Cultural affinities are descriptive, never a conversion gate. Adoption starts at developmental age6; missions start at18. Devotion advances only as time passes. A stored, deterministic chance can bring a divine manifestation and a three-stage quest. Four actual quarters separate stages. The player may obey, reinterpret or refuse at every stage, or leave between decisions. Completed/abandoned quests do not reset on conversion, so switching faiths cannot farm the same rewards. All nine faiths have one authored lifetime quest chain; content is finite.
+
+Following a quest through its final decision changes a named realm's danger and trade for six world years. Some literal commands benefit one realm while harming another; alternative interpretations change those trade-offs. Selected rites also change the existing human/demon or dragon/goblin relation. World effects remain after leaving the faith and expire by calendar year. Independently of personal belief, periodic divine manifestations leave witnessed physical evidence in their own realms. Pixel seals appear in deity cards and relevant scenes. Final divine choices receive weight in the lifetime/farewell ledger.
+
+The nonhuman audit also separates new wild/native lives from human payroll and rent. They use habitat resources, food/energy and anchors; paid work opens only after choosing exchange. They may forage, claim territory or share supplies, with actual resource, health and relationship costs and quarterly locks. Native recovery/mapping projects use habitat effort instead of city currency. Nonbiological kin are described as sources, caretakers, linked cores or related spores; native death passages describe the body's own ending. Old saves keep money, debt, jobs, kin identities/roles and world policies. Existing financial contracts are grandfathered; no faith or ambition is assigned retroactively. Incompatible legacy narrative remains in the journal with the existing ecology-history label. Choosing an exchange life remains available.
+
+Validation: `node scripts/check-faith-drives.cjs` checks216 initial ambition branches,135 divine quest branch decisions,36 actual time/chance-driven encounters,18 native project stages, canonical save roundtrips, lasting cross-realm effects, expiration, native resource/economy rules and malformed-state rejection. All72 seeded lifetimes completed with4,842 choices,57,032 calendar quarters and354 save roundtrips. Twenty real v20 migrations preserve wallets, debts, careers, named kin and policies. The v20 economic/world regressions pass. Chromium QA covers all nine faith cards and seals, annual conversion limits, all three quest stages, reinterpretation/leave/reload, native territory actions, explicit exchange, annual-focus navigation and320/390/768/1366 layouts. No new hosted gameplay API or multiplayer world is introduced.
