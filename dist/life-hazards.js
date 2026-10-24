@@ -1,0 +1,96 @@
+'use strict';
+const LifeHazards=(()=>{
+ const rows=[
+ ['poison','พิษที่กำลังลาม','กลิ่นหรือรสของแหล่งดำรงชีวิตเปลี่ยนไป ก่อนกำลังจะตกอย่างรวดเร็ว','พิษทำลายร่างจนไม่อาจฟื้น','clinic',1.1,0],
+ ['curse','คำสาปเริ่มเรียกชื่อคุณ','รอยพันธะที่มองไม่เห็นเริ่มดึงกำลังกลับไปหาผู้วางคำสาป','คำสาปตัดจุดยึดของชีวิต','shrine',1.2,0],
+ ['plague','โรคระบาดมาถึงถิ่น','ผู้ร่วมถิ่นหลายคนอ่อนแรงพร้อมกัน เขตพักเริ่มรับสมาชิกป่วยไม่ไหว','ภาวะแทรกซ้อนจากโรคระบาด','clinic',1,0],
+ ['war','แนวรบมาถึงที่พัก','แรงโจมตีข้ามแนวป้องกัน ทางที่เคยใช้กลับบ้านกลายเป็นเส้นทางอพยพ','การโจมตีระหว่างสงคราม','border',1.45,0],
+ ['monster','อสูรออกจากเขตล่า','ร่องรอยใหม่หยุดอยู่ใกล้แหล่งพัก คุณได้ยินสัญญาณไล่ล่าจากอีกฝั่ง','บาดแผลจากอสูรที่บุกถิ่น','forest',1.2,0],
+ ['persecution','คนต่างเผ่าถูกปิดทางออก','กองกำลังที่ตั้งด่านเริ่มเลือกปฏิบัติตามเผ่า ผู้ร่วมทางคนหนึ่งไม่ถูกปล่อยกลับ','ความรุนแรงจากความขัดแย้งระหว่างเผ่า','border',1.25,0],
+ ['class','ความรุนแรงข้ามชนชั้น','ข้อพิพาทเรื่องสิทธิและอำนาจลุกลาม คนติดอาวุธเริ่มตามหาฝ่ายตรงข้าม','ความรุนแรงจากข้อพิพาทเรื่องอำนาจและชนชั้น','council',1.05,16],
+ ['relic','ของปริศนาที่ไม่ควรปลุก','สิ่งที่นำกลับมาส่งเสียงตอบ ทั้งที่ไม่มีใครแตะมัน รอยผนึกเริ่มแยก','พลังย้อนจากวัตถุต้องผนึก','ruins',1.35,16],
+ ['trap','ทางเดินที่กลืนเสียงก้าว','แนวพื้นและผนังไม่ตรงกับแผน เสียงกลไกดังขึ้นจากทางกลับ','กับดักที่ปิดทางหนี','ruins',1.3,16],
+ ['dungeon','สิ่งที่อยู่ลึกกว่าค่ายคาดไว้','ชั้นล่างของซากดันเจี้ยนมีผู้เฝ้าที่แผนสำรวจไม่เคยระบุ ทางหนีแคบกว่าที่คิด','การสำรวจดันเจี้ยนที่เกินกำลัง','ruins',1.45,16],
+ ['duel','คู่ประลองที่ไม่ยอมยุติ','สัญญาณหยุดถูกเพิกเฉย คู่ประลองยังไล่เข้ามาขณะที่แนวป้องกันเริ่มแตก','บาดแผลในการประลอง','barracks',1.2,18],
+ ['quest','ภารกิจที่ประเมินต่ำเกินไป','ข้อมูลที่ได้รับไม่ตรงกับสิ่งที่พบ หน่วยก่อนหน้าหายไปและกำลังที่เหลือเริ่มถอย','ภารกิจที่ยากเกินกำลัง','ruins',1.5,16],
+ ['accident','อุบัติเหตุที่ไม่มีใครทันตั้งตัว','โครงสร้างหรือพลังที่พึ่งพาอยู่เสียสมดุล เส้นทางปลอดภัยถูกตัดขาด','อุบัติเหตุร้ายแรงในถิ่นหรือที่ทำงาน','workshop',.9,0],
+ ['predator','ผู้ล่ามาถึงแหล่งพัก','สัญญาณเตือนของกลุ่มเงียบลงทีละจุด ผู้ล่าเข้ามาจากทางที่เคยปลอดภัย','การล่าของสิ่งมีชีวิตที่แข็งแรงกว่า','forest',1.25,0],
+ ['habitat','ถิ่นที่เคยเลี้ยงชีวิตเริ่มพัง','น้ำ อากาศ ความชื้น หรือจุดยึดของถิ่นกำลังเปลี่ยนจนร่างเริ่มรับไม่ไหว','การล่มสลายของแหล่งดำรงชีวิต','forest',1.1,0],
+ ['rift','รอยแยกกลืนจุดยึด','พลังระหว่างดินแดนเริ่มบิดพื้นที่ เสียงและทิศที่เคยเชื่อถือได้ไม่ตรงกัน','พลังแยกมิติทำลายจุดยึดของชีวิต','ruins',1.35,0]
+ ];
+ const catalog=rows.map(([id,title,text,cause,scene,severity,min])=>({id,title,text,cause,scene,severity,min})),get=id=>catalog.find(d=>d.id===id),clamp=(x,a,b)=>Math.max(a,Math.min(b,x));
+ const hash=(s,k)=>{let n=Math.imul(((s.seed||0)^k)>>>0,2654435761);n=Math.imul(n^(n>>>16),2246822507);return(n^(n>>>13))>>>0},roll=(s,k)=>hash(s,k)/4294967296;
+ function ensure(s,fresh=false){if(!s.hazards){const q=s.calendar?.count||0;s.hazards={version:1,lastQuarter:-1,nextAt:q+(fresh?2:4),serial:0,active:null,history:[],death:null,convalescentUntil:0}}return s.hazards}
+ function profile(s){const p=Ecology.profile(s),bio=Engine.biological(s),j=s.job===null?'':JOBS[s.job]?.[0]||'',work=typeof Workwear==='undefined'?null:Workwear.resolve(s,null,bio),world=WorldTimeline.impact(s),relations=WorldRelations.summary(s),tension=Math.max(0,...relations.map(r=>r.phase==='war'?.8:r.phase==='uneasy'?.35:0));
+  const explorer=['explorer','ranger','fighter'].includes(work)||/ผจญภัย|นักล่า|สำรวจ|ภารกิจ/.test(j),military=work==='guard'||/ทหาร|อัศวิน|นักรบ/.test(j),industrial=['smith','engineer','carpenter','miner','potter'].includes(work),organic=!['shade','core'].includes(p.body)&&![14,31,42,60,61,67].includes(s.race),fragile=bio<4||bio>=65,poverty=!RaceDrives.cashless(s)&&(s.economy?.missed>=2||(bio>=16?s.gold<400&&(s.economy?.familyFund??0)<1200:(s.economy?.familyArrears??0)>2400)),care=s.focus==='health'||['health','rest'].includes(s.lifeChoices?.yearFocus),kin=FamilyWorld.list(s).some(m=>m.alive&&Engine.ageEquivalent(FamilyWorld.age(s,m),m.race)>=16),native=RaceDrives.cashless(s),resource=s.raceDrives?.resource??75;
+  const scale=85/RACES[s.race][2],danger=world.severity;
+  let exposure=(.028+(explorer?.105:military?.07:industrial?.025:0)+(native?.018:0)+(poverty?.012:0))*scale+.055*danger+.009*tension;
+  if(bio<16)exposure*=kin?.55:.9;if(care)exposure*=.8;if(s.worldTimeline?.response==='shelter')exposure*=.75;if(ensure(s).convalescentUntil>(s.calendar?.count||0))exposure*=.5;
+  const resilience=clamp(1-(s.power+s.magic+s.wisdom)/720,.5,1),vulnerability=clamp(resilience*(fragile?1.3:1)*(s.health<35?1.45:1)*(poverty?1.16:1)*(care?.85:1),.4,2);
+  return {p,bio,j,work,world,tension,explorer,military,industrial,organic,poverty,care,native,kin,resource,exposure:clamp(exposure,0,.35),vulnerability};
+ }
+ function weight(s,d,p=profile(s)){if(p.bio<d.min)return 0;const w=p.world,adult=p.bio>=16;
+  return ({poison:p.organic?(p.p.water||p.p.habitat==='marsh'?1.8:.8):0,plague:p.organic?(w.local&&/ไข้/.test(w.omen)?8:1.1):0,curse:['shade','core'].includes(p.p.body)?1.6:1,war:w.threats.some(t=>t.phase==='active'&&t.harm>.08)||p.tension>=.8?2+w.severity*7:0,monster:p.native?1.7:p.explorer?2:.45,persecution:p.tension>.3?p.tension*3:0,class:p.p.civic&&adult?(s.rank>=5?1.1:s.rank<=1?1.8:.4):0,relic:p.explorer||['mage','alchemist','scholar'].includes(p.work)?2:0,trap:p.explorer?2.2:0,dungeon:p.explorer?3:0,duel:adult&&(p.military||p.explorer)?1.4:0,quest:adult&&(p.explorer||p.military||s.faith?.active)?2.3:0,accident:p.industrial?3:p.p.civic?.6:.25,predator:s.race===12&&p.tension>.3?3:p.native&&![9,36,54,57].includes(s.race)?2:0,habitat:p.native||w.local&&/แล้ง|มรสุม|พายุ/.test(w.omen)?2:.3,rift:!p.organic?2.8:p.work==='mage'?1.6:.25})[d.id]||0;
+ }
+ function start(s,id,severity=null,fromChoice=false){const h=ensure(s),d=get(id),p=profile(s),q=s.calendar?.count||0;if(s.dead||h.active||!d||(!weight(s,d,p)&&!(fromChoice&&p.bio>=d.min&&(!['poison','plague'].includes(id)||p.organic))))return false;h.serial++;h.active={id,stage:0,severity:severity??clamp(d.severity*(.8+roll(s,h.serial*8191+q+81)*.6)+p.world.severity*.25,.5,2.5),started:q,due:q,realm:s.kingdom};h.lastQuarter=q;s.seen=s.seen.filter(id=>!id.startsWith('hazard-'));const text=description(s,d);Narrative.append(s,{title:d.title,paragraphs:[text],tone:'critical',kind:'world',key:'hazard-warning-'+h.serial,scene:scene(s,d),ecology:true});return true}
+ function scene(s,d){return Ecology.profile(s).strict?Ecology.profile(s).scene:d.scene}
+ function description(s,d){const p=profile(s),a=ensure(s).active,where=KINGDOMS[a?.realm??s.kingdom][0],body=p.p;
+  if(d.id==='war'){const t=p.world.threats.find(t=>t.phase==='active');return (t?t.name:'แนวรบจากความขัดแย้งระหว่างเผ่า')+'ลุกลามถึง'+where+' '+(p.bio<16?'ผู้ดูแลกำลังหาทางพาคุณออกจากเขตโจมตี':p.military?'หน่วยของคุณถูกตัดจากกำลังหนุน':'ทางอพยพเริ่มถูกปิด คุณยังเลือกถอยหรือช่วยผู้ติดค้างได้')}
+  if(d.id==='plague')return body.body==='roots'?'รอยเน่าแพร่ผ่านรากที่เชื่อมกัน ผู้ร่วมเครือเริ่มตัดส่วนเสียออกจากถิ่น':body.body==='gel'?'สิ่งปนเปื้อนแพร่ในแอ่งรวม ขอบร่างรวมกลับได้ช้าลง':body.water?'สิ่งติดเชื้อแพร่ตามกระแสน้ำ แหล่งพักของกลุ่มเริ่มป่วยพร้อมกัน':'ไข้ระบาดมาถึง'+where+' คนใกล้ตัวเริ่มมีอาการ เขตพักผู้ป่วยกำลังขาดผู้ดูแล';
+  if(d.id==='predator'&&s.race===12)return 'เงามังกรทาบปากถ้ำ ก่อนเสียงเตือนของคนเฝ้าอุโมงค์จะขาดไป คุณต้องหาทางหลบแนวล่า';
+  if(d.id==='persecution'){const other=WorldRelations.summary(s).find(r=>r.phase==='war'||r.phase==='uneasy')?.other||'กองกำลังต่างเผ่า';return other+'ปิดทางผ่านใน'+where+' สมาชิกเผ่าของคุณเริ่มถูกทำร้าย ผู้ร่วมถิ่นกำลังหาทางออก'}
+  if(d.id==='class')return s.rank>=5?'ข้อพิพาทอำนาจในสภาลุกลาม ผู้ติดอาวุธเข้ามาถึงที่พักของตระกูล':'ผู้ถือสิทธิในที่ดินส่งคนติดอาวุธมาไล่ที่ ข้อพิพาทกลายเป็นความรุนแรงก่อนเจรจาจบ';
+  if(d.id==='quest')return 'ภารกิจ'+(p.j?'ที่คุณรับในฐานะ'+p.j:'ที่คุณตกลงช่วย')+'ประเมินกำลังศัตรูต่ำเกินไป ข้อมูลหนีภัยขาดหาย และผู้ร่วมทางเริ่มขอถอนตัว';
+  if(d.id==='habitat')return 'ใน'+body.label+' '+(body.water?'กระแสน้ำปนเปื้อนและแหล่งพักขาดอากาศ':body.body==='roots'?'ความชื้นหายไปและรากที่รับน้ำเริ่มตาย':body.body==='shade'?'จุดยึดเริ่มสูญเสียแรงตอบรับ':body.habitat==='ember'?'แหล่งความร้อนดับลงเร็วกว่าที่กลุ่มคาด':'แหล่งดำรงชีวิตถูกทำลายจนร่างเริ่มรับไม่ไหว');
+  if(p.bio<16)return 'สัญญาณอันตรายมาถึง'+body.label+' ผู้ดูแลพาคุณหลบออกจากบริเวณที่กำลังเสียสมดุล';
+  return d.text+(p.j?' คุณพบเหตุนี้ระหว่างใช้ชีวิตเป็น'+p.j:' เหตุเกิดใน'+where);
+ }
+ function odds(s,stage,action){const h=ensure(s),a=h.active;if(!a)return 0;const p=profile(s),base=stage===0?[.006,.032,.009,.28]:[.12,.085,.026,.4],effective=action===2&&p.native&&p.resource<18?1:action,physical=['war','monster','trap','duel','accident','predator'].includes(a.id),bodyGuard=physical?([9,36].includes(s.race)?.65:[45,46,53,66].includes(s.race)?.8:1):1,skill=action===3?clamp(1-(s.power+s.magic+s.wisdom)/520,.45,1):1;return clamp(base[effective]*a.severity*p.vulnerability*bodyGuard*skill,stage===0?.002:.008,.75)}
+ function cost(s,stage){const a=ensure(s).active;return RaceDrives.cashless(s)?0:Math.round(((stage===0?650:1800)+(a?.severity||1)*650)*WorldTimeline.impact(s).price/25)*25}
+ const responses={
+  poison:['หยุดรับสิ่งปนเปื้อนและออกจากแหล่งพิษ','ขอให้ผู้รู้ในถิ่นช่วยต้านพิษ','ให้ผู้ชำนาญถอนพิษทันที','กลับเข้าไปช่วยผู้ที่ยังติดอยู่ในแหล่งพิษ'],
+  curse:['ตัดการติดต่อกับแหล่งคำสาป','ขอผู้ร่วมถิ่นช่วยแยกพันธะ','ให้ผู้ชำนาญคลายคำสาป','ย้อนตามพันธะไปเผชิญผู้วางคำสาป'],
+  plague:['แยกตัวและหยุดเข้าเขตระบาด','ขอความช่วยเหลือจากเขตพักของชุมชน','รับการดูแลจากผู้รักษาเฉพาะทาง','เข้าเขตระบาดช่วยผู้ป่วยที่ยังออกมาไม่ได้'],
+  war:['อพยพออกจากแนวรบ','อยู่กับกลุ่มที่กำลังจัดทางถอย','จ้างทีมคุ้มกันพาออกจากเขตสู้รบ','ย้อนเข้าไปช่วยผู้ติดอยู่ในแนวรบ'],
+  monster:['ย้ายแหล่งพักให้พ้นแนวล่า','รวมกลุ่มป้องกันทางกลับ','จ้างผู้ชำนาญขับอสูรออกจากถิ่น','ย้อนกลับไปล่ออสูรให้คนอื่นหนี'],
+  persecution:['หลบออกจากเขตที่ตั้งด่าน','พึ่งเครือข่ายผู้ร่วมถิ่นหาทางผ่าน','จ้างผู้คุ้มกันพาออกจากเขตปิดล้อม','กลับไปช่วยสมาชิกเผ่าที่ถูกขังไว้'],
+  class:['ออกจากพื้นที่ปะทะก่อน','ขอให้คนกลางพาหลบความรุนแรง','จัดการคุ้มกันจากผู้ชำนาญ','ยืนขวางเพื่อปกป้องผู้ที่กำลังถูกทำร้าย'],
+  relic:['ถอยห่างและไม่แตะวัตถุซ้ำ','ขอผู้ร่วมทางช่วยกันตีวงผนึก','ให้ผู้ชำนาญผนึกวัตถุก่อนเคลื่อนย้าย','ฝืนเปิดชั้นในของวัตถุเพื่อหยุดพลัง'],
+  trap:['หยุดและถอยตามรอยเดิม','ให้ผู้ร่วมทางช่วยตรวจทางหนี','จ้างช่างปลดกลไกกับดัก','ฝ่าแนวกลไกเข้าไปเปิดทางสุดท้าย'],
+  dungeon:['ถอนตัวพร้อมผู้ร่วมทาง','ตั้งแนวคุ้มกันแล้วถอยเป็นกลุ่ม','จ้างทีมสำรวจพาออกทางปลอดภัย','ฝ่าเข้าไปหาแกนของผู้เฝ้าชั้นลึก'],
+  duel:['ยอมแพ้และออกจากลาน','ขอผู้คุมลานเข้ามาแยกคู่ประลอง','จ้างผู้คุ้มกันพาออกจากวงต่อสู้','ประลองต่อแม้อีกฝ่ายไม่ยอมหยุด'],
+  quest:['ยกเลิกภารกิจและถอนตัว','ขอกำลังหนุนแล้วจัดทางถอย','ว่าจ้างทีมที่รับมือภารกิจนี้ได้','ทำภารกิจต่อแม้เกินกำลังที่เตรียมมา'],
+  accident:['ถอยจากบริเวณที่กำลังพัง','ขอผู้ร่วมถิ่นช่วยเปิดทางหนี','เรียกผู้ชำนาญกู้ภัยมาช่วย','กลับเข้าไปช่วยผู้ที่ยังติดอยู่'],
+  predator:['หลบตามทางที่ผู้ล่าตามเข้าไม่ได้','รวมกลุ่มเฝ้าระวังแนวกลับถิ่น','หาผู้ชำนาญช่วยเบี่ยงแนวล่า','ล่อผู้ล่าออกห่างจากสมาชิกกลุ่ม'],
+  habitat:['ย้ายแหล่งดำรงชีวิตก่อนกำลังหมด','ตามกลุ่มไปยังเขตพักสำรอง','ให้ผู้ชำนาญช่วยฟื้นแหล่งพัก','กลับไปช่วยผู้ที่ยังออกจากถิ่นไม่ได้'],
+  rift:['ออกห่างแนวพื้นที่ที่กำลังแยก','ตามกลุ่มที่ยังจำทางกลับได้','ให้ผู้ชำนาญยึดพิกัดทางกลับ','ฝ่าเข้าไปปิดแกนรอยแยก']
+ };
+ function plan(s){const h=ensure(s),a=h.active,d=a&&get(a.id);if(!a)return null;const p=profile(s),kid=p.bio<16&&p.kin;let labels;
+  if(a.stage===0){labels=responses[d.id].slice();if(kid){labels[0]='ให้ผู้ดูแลพาหลบจากเหตุอันตราย';labels[1]='ให้ผู้ดูแลขอความช่วยเหลือจากกลุ่ม';labels[3]='ผู้ดูแลเสี่ยงพาคุณฝ่าแนวอันตราย'}if(p.native)labels[2]='ใช้แหล่งสำรองของกลุ่มรับมือภัย'}else labels=[p.native?'พักร่างในแหล่งที่ยังปลอดภัย':'พักฟื้นด้วยสิ่งที่หาได้',p.native?'ให้ผู้ร่วมถิ่นช่วยฟื้นร่าง':'ขอผู้รักษาชุมชนช่วย',p.native?'ใช้แหล่งสำรองรักษาร่าง':'รับการรักษาจากผู้ชำนาญ','ฝืนกลับออกไปทั้งที่อาการยังไม่สงบ'];
+  return {d,p,choices:labels.map((label,i)=>{const chance=odds(s,a.stage,i),fee=i===2?cost(s,a.stage):0,resource=i===2&&p.native&&p.resource>=18?18:0,familyFee=i===2&&p.bio<16&&p.kin&&(s.economy?.familyFund??0)>=fee?fee:0;if(i===2&&p.native&&p.resource<18)label='แหล่งสำรองไม่พอ — ขอให้ผู้ร่วมถิ่นช่วย';return {label,effect:fee&&!familyFee?{gold:-fee}:{},risk:chance,hazardAction:i,hint:(a.stage===0?'อันตรายถึงชีวิต':'เสี่ยงเสียชีวิตจากอาการ')+' ≈ '+(chance*100).toFixed(1)+'%'+(fee?' · ค่าใช้จ่าย '+fee.toLocaleString('th-TH')+' ทอง'+(familyFee?' · ครอบครัวออกให้':''):' · ไม่เสียทอง')+(resource?' · แหล่งถิ่น −18':'')+(i===3?' · มีโอกาสบาดเจ็บรุนแรง':''),success:'คุณลงมือรับมือกับอันตราย',fee,resource,familyFee}})}
+ }
+ function matches(s,e){if(e.hazardOnly===undefined)return true;const a=s.hazards?.active;return !!a&&a.id===e.hazardOnly&&a.stage===e.hazardStage&&(s.calendar?.count||0)>=a.due&&!s.dead}
+ function next(s){const a=s.hazards?.active;return a&&(s.calendar?.count||0)>=a.due?EVENTS.find(e=>e.id==='hazard-'+a.id+'-'+a.stage):null}
+ function choiceThreat(e,c){if(!e||e.hazardOnly||(c.risk||0)<.14)return null;const text=(e.title||'')+' '+(e.text||'');return /ดันเจี้ยน/.test(text)?'dungeon':/กับดัก/.test(text)?'trap':/พิษ|โอสถต้องห้าม/.test(text)?'poison':/คำสาป/.test(text)?'curse':/ประลอง/.test(text)?'duel':/ภารกิจ|เควสต์/.test(text)?'quest':/วัตถุ|ผนึก|ไอเทม|โบราณวัตถุ/.test(text)?'relic':/สงคราม|กองทัพ|สนามรบ/.test(text)?'war':/ล่า|อสูร|มอนสเตอร์/.test(text)?'monster':null}
+ function decisionExposure(s,e,c){if(ensure(s).active||s.dead||s.health<=0||Engine.biological(s)<16)return;const id=choiceThreat(e,c);if(!id)return;const chance=s.outcome.success?Math.min(.8,.25+(c.risk||0)):1;if(roll(s,(s.turn+1)*524287+ensure(s).serial*109+811)<chance&&start(s,id,null,true)){s.hazards.active.due=(s.calendar?.count||0)+1;s.outcome.text+=' แต่ยังมีอันตรายจาก'+get(id).title+'ที่ต้องรับมือต่อ'}}
+ function decorate(s,e){if(!e.hazardOnly){if(!(e.choices||[]).some(c=>choiceThreat(e,c)))return e;return {...e,critical:true,choices:e.choices.map(c=>choiceThreat(e,c)?{...c,hint:(c.hint||'')+' · อาจเปิดเหตุเสี่ยงถึงชีวิตต่อเนื่อง'}:c)}};const a=ensure(s).active;if(!a||a.id!==e.hazardOnly||a.stage!==e.hazardStage)return e;const p=plan(s);return {...e,title:a.stage===0?p.d.title:'อาการยังไม่สงบ · '+p.d.title,text:a.stage===0?description(s,p.d):'หลังเหตุครั้งก่อน ร่างของคุณยังฟื้นไม่ทัน '+(p.p.organic?'อาการปวดและอ่อนแรงเริ่มกลับมา':'แรงของแกนและจุดยึดเริ่มแผ่วลง')+' การฝืนต่ออาจทำให้ไม่กลับมาอีก',choices:p.choices,scene:scene(s,p.d)}}
+ function quarter(s){const h=ensure(s),q=s.calendar?.count||0;if(s.dead||!s.accepted||h.lastQuarter===q)return;h.lastQuarter=q;
+  if(h.active){if(h.active.stage===1){const loss=1.5*h.active.severity;s.health=Math.max(1,s.health-loss)}return}
+  if(q<h.nextAt)return;const p=profile(s);if(roll(s,q*787+913)>=p.exposure)return;const pool=catalog.map(d=>({d,w:weight(s,d,p)})).filter(x=>x.w>0),total=pool.reduce((n,x)=>n+x.w,0);let ticket=roll(s,q*1193+71)*total;for(const {d,w} of pool){ticket-=w;if(ticket<=0){start(s,d.id);break}}
+ }
+ function resolve(s,e,c){if(!e.hazardOnly){decisionExposure(s,e,c);return null}const h=ensure(s),a=h.active;if(!a||e.hazardOnly!==a.id||e.hazardStage!==a.stage)return null;const action=c.hazardAction;if(!Number.isInteger(action)||action<0||action>3)return null;const p=plan(s),option=p.choices[action],q=s.calendar?.count||0,d=get(a.id),chance=Number.isFinite(c.risk)?clamp(c.risk,0,.75):odds(s,a.stage,action),failed=roll(s,h.serial*131071+a.stage*8191+action*97+1009)<chance;
+  if(option.familyFee)s.economy.familyFund=Math.max(0,s.economy.familyFund-option.familyFee);
+  if(option.resource){s.raceDrives.resource=Math.max(0,s.raceDrives.resource-option.resource)}
+  const stage=a.stage,damage=stage===0?[2,7,3,16][action]:[3,2,0,14][action];s.health=Math.max(1,s.health-damage*a.severity);
+  if(failed||s.health<=0){const cause=d.cause+' ใน'+KINGDOMS[a.realm][0];h.death={id:d.id,age:s.age,realm:a.realm,stage,chance};s.health=0;s.outcome.text='แม้พยายาม'+option.label+' แต่'+cause+' ชีวิตนี้จบลงก่อนวัยที่คาดไว้';s.outcome.success=false;addHistory(s,d,'เสียชีวิต',s.outcome.text);h.active=null;return cause}
+  const complications=stage===0&&roll(s,h.serial*65537+action*193+199)<([.14,.62,.27,.8][action]*clamp(a.severity,.7,1.5));
+  if(complications){a.stage=1;a.due=q+1;s.seen=s.seen.filter(id=>id!=='hazard-'+d.id+'-1');s.outcome.text='คุณรอดจาก'+d.title+' แต่ร่างยังได้รับผลกระทบ ต้องดูอาการต่อในช่วงถัดไป';s.outcome.success=false;addHistory(s,d,'มีอาการต่อเนื่อง',s.outcome.text)}else{h.active=null;h.nextAt=q+(stage===1?6:3);if(stage===1){h.convalescentUntil=q+8;s.health=Math.min(100,s.health+8)}s.outcome.text=stage===1?'คุณผ่านอาการรุนแรงมาได้ ร่างยังต้องการเวลาฟื้น':'คุณรอดจาก'+d.title+' และกลับออกจากเขตอันตรายได้';s.outcome.success=true;addHistory(s,d,'รอดชีวิต',s.outcome.text)}
+  if(action===3){if(['war','monster','persecution','class','plague','poison','habitat','rift','accident','predator'].includes(d.id))s.bond=Math.min(100,s.bond+4);s.fame=Math.min(100,s.fame+3)}return null;
+ }
+ function healthCause(s,fallback){const h=ensure(s),a=h.active;if(!a||a.stage!==1)return fallback;const d=get(a.id),cause='ภาวะแทรกซ้อนหลัง'+d.title+' ใน'+KINGDOMS[a.realm][0];h.death={id:d.id,age:s.age,realm:a.realm,stage:1,chance:null,mechanism:'health'};addHistory(s,d,'เสียชีวิต',cause);h.active=null;return cause}
+ function addHistory(s,d,result,text){const h=ensure(s);h.history.unshift({id:d.id,age:s.age,realm:s.kingdom,result,text:text.slice(0,500)});h.history.length=Math.min(24,h.history.length)}
+ function autoIndex(s,style){const p=plan(s);if(!p)return -1;if(style==='safe'&&s.hazards.active.stage===0)return 0;if(style==='ambitious')return 3;if(style==='kind'&&s.hazards.active.stage===0)return 3;return p.p.native?(p.p.resource>=35?2:1):(p.choices[2].familyFee||s.gold>=p.choices[2].fee*2?2:1)}
+ function install(){for(const d of catalog)for(let stage=0;stage<=1;stage++)EVENTS.push({id:'hazard-'+d.id+'-'+stage,title:d.title,text:d.text,min:d.min,certain:true,critical:true,ecology:true,hazardOnly:d.id,hazardStage:stage,choices:[0,1,2,3].map(hazardAction=>({label:'รับมือเหตุอันตราย',effect:{},risk:0,hazardAction,success:'รับมือเหตุอันตราย'}))})}
+ function valid(s){const h=s.hazards;if(h===undefined)return true;const n=(x,a,b)=>Number.isFinite(x)&&x>=a&&x<=b,i=(x,a,b)=>Number.isInteger(x)&&n(x,a,b);if(!h||h.version!==1||!i(h.lastQuarter,-1,20000)||!i(h.nextAt,0,20020)||!i(h.serial,0,20000)||!i(h.convalescentUntil,0,20020)||!Array.isArray(h.history)||h.history.length>24||!h.history.every(x=>get(x.id)&&n(x.age,0,s.age)&&i(x.realm,0,KINGDOMS.length-1)&&['เสียชีวิต','มีอาการต่อเนื่อง','รอดชีวิต'].includes(x.result)&&typeof x.text==='string'&&x.text.length<=500))return false;const a=h.active,d=h.death;return (a===null||a&&get(a.id)&&i(a.stage,0,1)&&n(a.severity,.5,2.5)&&i(a.started,0,20000)&&i(a.due,a.started,20020)&&i(a.realm,0,KINGDOMS.length-1))&&(d===null||d&&get(d.id)&&s.dead&&n(d.age,0,s.age)&&i(d.realm,0,KINGDOMS.length-1)&&i(d.stage,0,1)&&(n(d.chance,0,.75)||d.chance===null&&d.mechanism==='health'))}
+ return {catalog,get,ensure,profile,weight,start,odds,cost,plan,matches,next,decorate,quarter,resolve,healthCause,autoIndex,install,valid,choiceThreat,decisionExposure};
+})();
