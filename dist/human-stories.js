@@ -1,6 +1,6 @@
 'use strict';
 (()=>{
- const H=HumanOrigins,labels={gold:'เหรียญ',health:'สุขภาพ',joy:'ความสุข',power:'พละกำลัง',magic:'เวท',wisdom:'ปัญญา',bond:'สายสัมพันธ์',fame:'ชื่อเสียง',clanFavor:'ความไว้ใจของตระกูล'};
+ const H=HumanOrigins,labels={gold:'ทอง',health:'สุขภาพ',joy:'ความสุข',power:'พละกำลัง',magic:'เวท',wisdom:'ปัญญา',bond:'สายสัมพันธ์',fame:'ชื่อเสียง',clanFavor:'ความไว้ใจของตระกูล'};
  const C=(label,effect,success,extra={})=>({label,effect,success,risk:0,hint:Object.entries(effect).filter(([k])=>labels[k]).map(([k,v])=>labels[k]+' '+(v>0?'+':'')+v).join(' · '),...extra});
  const add=(id,title,text,min,choices,tags={})=>ev('human-'+id,title,text,choices,min,{humanOnly:true,once:true,lifeOpportunity:true,certain:true,...tags});
  add('road','ชีวิตที่อยากลองเป็นของตัวเอง','คนในบ้านเริ่มถามถึงอนาคต คุณอาจสืบงานของสกุล หรือเริ่มจากสิ่งที่อยากลองเอง ยังเปลี่ยนเส้นทางภายหลังได้',12,H.paths.map(p=>C(p.name,{},'คุณเลือกเริ่มเรียนรู้เรื่อง'+p.name+' โดยยังไม่ต้องตอบว่าชีวิตทั้งหมดจะจบที่ไหน',{humanPath:p.id,hint:p.description})),{max:25,humanPickPath:true,scene:'garden'});

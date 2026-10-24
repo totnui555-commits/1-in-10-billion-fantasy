@@ -84,7 +84,7 @@ const cultures=[
 const races=profiles.map((p,i)=>({data:[p[0],p[1],p[2],p[4],p[5]],maturity:p[3],kind:p[6],appearance:p[7],spriteBase:p[8],faction:p[9],roots:roots[i],ways:cultures[i].slice(0,2),daily:cultures[i][2]}));
 const maturity={};
 races.forEach((r,i)=>{const n=startRace+i;if(RACES.length!==n)throw Error('Frontier race catalog order');RACES.push(r.data);maturity[n]=r.maturity;FantasyNames.roots[n]=r.roots.map(x=>x.split('|'));WorldLore.raceWays[n]=r.ways;LifeContent.races[n]=r.daily;ContentExpansion.raceTraits[n]={kind:r.kind,appearance:r.appearance,spriteBase:r.spriteBase};if(typeof WorldRelations!=='undefined'){const f=WorldRelations.factions.find(x=>x.id===r.faction);if(f&&!f.races.includes(n))f.races.push(n)}});
-const labels={health:'สุขภาพ',joy:'ความสุข',power:'พละกำลัง',magic:'เวท',wisdom:'ปัญญา',bond:'สายสัมพันธ์',fame:'ชื่อเสียง',gold:'เหรียญ'};
+const labels={health:'สุขภาพ',joy:'ความสุข',power:'พละกำลัง',magic:'เวท',wisdom:'ปัญญา',bond:'สายสัมพันธ์',fame:'ชื่อเสียง',gold:'ทอง'};
 const choice=(label,effect,success)=>({label,effect,success,risk:0,hint:Object.entries(effect).filter(([k,v])=>labels[k]&&typeof v==='number').map(([k,v])=>labels[k]+' '+(v>0?'+':'')+v).join(' · ')});
 const add=(id,title,text,min,max,options,tags={})=>ev('frontier-'+id,title,text,options.map(x=>choice(...x)),min,{max,once:true,lifeOpportunity:true,certain:true,...tags});
 // Each life gets an intimate childhood scene and a different adult dilemma.
@@ -135,8 +135,8 @@ const childhood=[
  ['ตั้งชื่อแล้วดูแลไปด้วยกัน',{bond:5,joy:2},'ชื่อที่เลือกยาวกว่าตัวปลาเสียอีก'],['พามันกลับไปหาฝูง',{wisdom:5},'มันหายไปในฝูงแล้วกลับมาว่ายวนทักคุณหนึ่งรอบ'],['ขอคำแนะนำจากคนที่บ้าน',{health:3,bond:4},'คุณได้รู้ว่ากิ่งไหนให้ปลาอยู่ได้โดยไม่ทำให้ตัวเองเจ็บ']]],
  ['ก้าวที่ออกจากแถว','เด็กทุกคนเดินตามจังหวะเดียวกัน แต่คุณหยุดดูดอกไม้และหลุดจากขบวน',[
  ['เก็บดอกไปเล่าให้เพื่อนฟัง',{joy:5,bond:2},'เพื่อนยอมเดินช้าลงเพื่อดูดอกที่เหลือด้วย'],['ขอเป็นคนท้ายแถวครั้งหน้า',{wisdom:5},'คุณคอยนับเพื่อนและยังมีเวลามองสองข้างทาง'],['แต่งจังหวะใหม่ของตัวเอง',{magic:4,joy:3},'มีเพื่อนสองคนลองเคาะตามจนเกิดขบวนเล็กอีกขบวน']]],
- ['เกล็ดที่คายออกมา','เกล็ดแรกของคุณหลุดบนหมอน เพื่อนคิดว่าเป็นเหรียญวิเศษและอยากได้',[
- ['ทำจี้ให้เพื่อน',{bond:6},'เพื่อนเก็บจี้อย่างดีและไม่เรียกมันว่าเหรียญอีก'],['เก็บใส่กล่องวันเกิด',{joy:5},'คนที่บ้านเขียนวันที่ให้ คุณเปิดดูก่อนนอนอีกครั้ง'],['วาดลายเกล็ดลงสมุด',{wisdom:5},'คุณเริ่มเก็บภาพเกล็ดแต่ละแบบแทนเก็บทุกชิ้น']]]
+ ['เกล็ดที่คายออกมา','เกล็ดแรกของคุณหลุดบนหมอน เพื่อนคิดว่าเป็นทองวิเศษและอยากได้',[
+ ['ทำจี้ให้เพื่อน',{bond:6},'เพื่อนเก็บจี้อย่างดีและไม่เรียกมันว่าทองอีก'],['เก็บใส่กล่องวันเกิด',{joy:5},'คนที่บ้านเขียนวันที่ให้ คุณเปิดดูก่อนนอนอีกครั้ง'],['วาดลายเกล็ดลงสมุด',{wisdom:5},'คุณเริ่มเก็บภาพเกล็ดแต่ละแบบแทนเก็บทุกชิ้น']]]
 ];
 const adulthood=[
  ['ทางลับใต้รังมังกร','คนแคระเสนอซื้อแผนที่อุโมงค์ที่ครอบครัวคุณใช้มาตั้งแต่เด็ก ทางนั้นเปิดตรงใต้รังมังกร',[

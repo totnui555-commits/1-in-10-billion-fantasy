@@ -66,14 +66,14 @@ function canCareer(s,index){
  return true;
 }
 function salaryMultiplier(s){const l=ensure(s);return (1+l.level*.2)*(l.workload??1)}
-function open(s,id){const l=ensure(s),def=businessCatalog.find(b=>b.id===id);if(!def||typeof Ecology!=='undefined'&&!Ecology.businessAllowed(s,def)||s.dead||bio(s)<18||l.business||s.gold<def.cost||s[def.stat]<def.minimum)return false;s.gold-=def.cost;l.business={id,openedAge:s.age,kingdom:s.kingdom,age:0,cash:round(def.cost*.35),quality:35,loyalty:25,reputation:20,staff:0,debt:0,lastRevenue:0,lastCosts:0,lastProfit:0,totalProfit:0,lastDemand:1,badQuarters:0,mode:'steady',lastQuarter:-1,ownerDraw:0};l.lastActionQuarter=s.calendar?.count??0;history(s,'เปิด'+def.name+'ใน'+KINGDOMS[s.kingdom][0]+' ลงทุน '+def.cost+' เหรียญ');return true}
-function manage(s,action){const l=ensure(s),b=l.business,def=b&&businessCatalog.find(x=>x.id===b.id),q=s.calendar?.count??0;if(!b||!def||s.dead||l.lastActionQuarter===q)return false;const prices={quality:12,marketing:8,train:15,reserve:10,close:0};if(!(action in prices)||s.gold<prices[action])return false;l.lastActionQuarter=q;
- if(action==='close'){const recovered=Math.max(0,Math.floor(b.cash+def.cost*.2));s.gold=clamp(s.gold+recovered,0,1e9);history(s,'ปิด'+def.name+' รับคืนเงินทุนหมุนเวียนและขายอุปกรณ์ได้ '+recovered+' เหรียญ');l.business=null;return true}
+function open(s,id){const l=ensure(s),def=businessCatalog.find(b=>b.id===id);if(!def||typeof Ecology!=='undefined'&&!Ecology.businessAllowed(s,def)||s.dead||bio(s)<18||l.business||s.gold<def.cost||s[def.stat]<def.minimum)return false;s.gold-=def.cost;l.business={id,openedAge:s.age,kingdom:s.kingdom,age:0,cash:round(def.cost*.35),quality:35,loyalty:25,reputation:20,staff:0,debt:0,lastRevenue:0,lastCosts:0,lastProfit:0,totalProfit:0,lastDemand:1,badQuarters:0,mode:'steady',lastQuarter:-1,ownerDraw:0};l.lastActionQuarter=s.calendar?.count??0;history(s,'เปิด'+def.name+'ใน'+KINGDOMS[s.kingdom][0]+' ลงทุน '+def.cost+' ทอง');return true}
+function manage(s,action){const l=ensure(s),b=l.business,def=b&&businessCatalog.find(x=>x.id===b.id),q=s.calendar?.count??0;if(!b||!def||s.dead||l.lastActionQuarter===q)return false;const prices={quality:1200,marketing:800,train:1500,reserve:1000,close:0};if(!(action in prices)||s.gold<prices[action])return false;l.lastActionQuarter=q;
+ if(action==='close'){const recovered=Math.max(0,Math.floor(b.cash+def.cost*.2));s.gold=clamp(s.gold+recovered,0,1e9);history(s,'ปิด'+def.name+' รับคืนเงินทุนหมุนเวียนและขายอุปกรณ์ได้ '+recovered+' ทอง');l.business=null;return true}
  s.gold-=prices[action];
  if(action==='quality'){b.quality=Math.min(100,b.quality+12);b.reputation=Math.min(100,b.reputation+3)}
  if(action==='marketing'){b.loyalty=Math.min(100,b.loyalty+8);b.reputation=Math.min(100,b.reputation+6)}
  if(action==='train'){b.staff=Math.min(3,b.staff+1);b.quality=Math.min(100,b.quality+7)}
- if(action==='reserve')b.cash=round(Math.min(1e7,b.cash+10));
+ if(action==='reserve')b.cash=round(Math.min(1e7,b.cash+1000));
  history(s,({quality:'ปรับปรุงคุณภาพ',marketing:'แนะนำร้านกับคนในชุมชน',train:'ฝึกและจ้างผู้ช่วย',reserve:'เพิ่มเงินทุนหมุนเวียน'})[action]+'ของ'+def.name);return true;
 }
 function quarter(s){const l=ensure(s),q=s.calendar?.count??0;if(s.dead||l.lastQuarter===q)return null;l.lastQuarter=q;const k=normal(s),age=bio(s);let entry=null;
@@ -88,19 +88,20 @@ function quarter(s){const l=ensure(s),q=s.calendar?.count??0;if(s.dead||l.lastQu
  b.age=round(b.age+k/4);
  const relocation=s.kingdom!==b.kingdom ? .95 : 1;
  const demand=clamp(def.realms[b.kingdom]*seasonal*market*(.66+b.reputation/200+b.loyalty/250)*relocation,.25,1.85);
- const revenue=round(def.revenue*demand*(.75+skill*.35+b.quality/250)*(1+b.staff*.12)*k/4);
- const costs=round((def.costs+b.staff*3)*(.92+(1-skill)*.15)*k/4);
- const incident=luck<.045?round((4+def.cost*.035)*k):0;
+ const marketWorld=typeof WorldTimeline==='undefined'?{jobs:1,price:1}:WorldTimeline.impact({...s,kingdom:b.kingdom});
+ const revenue=round(def.revenue*marketWorld.jobs*demand*(.75+skill*.35+b.quality/250)*(1+b.staff*.4)/4);
+ const costs=round((def.costs*marketWorld.price+b.staff*18000)*(.92+(1-skill)*.15)/4);
+ const incident=luck<.045?round((400+def.cost*.035)):0;
  const profit=round(revenue-costs-incident);
  b.cash=round(clamp(b.cash+profit,0,1e7));b.lastRevenue=revenue;b.lastCosts=round(costs+incident);b.lastProfit=profit;b.totalProfit=round(clamp(b.totalProfit+profit,-1e7,1e7));b.lastDemand=round(demand);b.lastQuarter=q;
  b.loyalty=round(clamp(b.loyalty+(b.quality>=50?.3:.1)*k,0,100));
  b.reputation=round(clamp(b.reputation+(.1+(b.quality-40)/300)*k,0,100));
- const draw=profit>0?round(Math.min(b.cash,profit*.35)):0;if(draw>0){b.cash=round(Math.max(0,b.cash-draw));s.gold=clamp(s.gold+draw,0,1e9);b.ownerDraw=round(b.ownerDraw+draw)}
+ const draw=profit>0?round(Math.min(b.cash,profit*.65)):0;if(draw>0){b.cash=round(Math.max(0,b.cash-draw));s.gold=clamp(s.gold+draw,0,1e9);b.ownerDraw=round(b.ownerDraw+draw)}
  if(b.cash<=.01&&profit<0)b.badQuarters=round(b.badQuarters+k/4);else b.badQuarters=0;
  if(b.badQuarters>=1){history(s,def.name+'หยุดกิจการหลังเงินหมุนเวียนไม่พอจ่ายต้นทุน');l.business=null;s.joy=Math.max(0,s.joy-5);return {title:'วันที่ต้องปิดร้านชั่วคราว',tone:'loss',kind:'work',key:'business-closed-'+def.id+'-'+q,paragraphs:['เงินหมุนเวียนของ'+def.name+'ไม่พอจ่ายต้นทุนต่อ คุณชำระสิ่งที่จ่ายได้แล้วแจ้งลูกค้าและผู้ช่วยว่าจะหยุดรับงานใหม่','คุณเก็บบัญชีครั้งนี้ไว้ดูว่าเงินหมดที่ส่วนใด การเปิดร้านอีกครั้งจะต้องใช้เงินทุนใหม่และแผนที่ต่างจากเดิม']}}
  if(entry)return entry;
  // Finance always runs; a detailed business scene appears once per biological year.
- if(Math.floor(b.age)!==Math.floor(Math.max(0,b.age-k/4))){const where=KINGDOMS[b.kingdom][0],outcome=profit>=0?'รายรับพอจ่ายค่าใช้จ่ายและยังเหลือเก็บ':'รายรับยังไม่พอต้นทุน ต้องใช้เงินสำรองที่กันไว้';return {title:'ตรวจบัญชีของ'+def.name,kind:'work',key:'business-account-'+def.id+'-'+Math.floor(b.age),paragraphs:['ที่'+where+' คุณตรวจรายการรับจ่ายทีละบรรทัด '+outcome+' ช่วงล่าสุดมีรายรับ '+revenue.toFixed(2)+' เหรียญ และต้นทุน '+b.lastCosts.toFixed(2)+' เหรียญ',b.staff?'ผู้ช่วยนำยอดงานที่ยังค้างมาเทียบกับเวลาที่รับปากลูกค้า คุณทั้งคู่ตกลงว่าจะรับงานเพิ่มเท่าที่ทำไหว':'คุณสลับเวลารับลูกค้ากับการเตรียมสินค้า ถ้าจะขยายร้านจำเป็นต้องคิดทั้งค่าจ้างและเวลาสอนงาน',demand<.85?'คนซื้อของน้อยลงในฤดูนี้ คุณจึงลดของที่เตรียมล่วงหน้าและถามลูกค้าประจำว่าต้องการอะไร':b.quality>=60?'ลูกค้าประจำแนะนำคนรู้จักมาเพราะคุณภาพที่สม่ำเสมอ คุณจดคำสั่งซื้อไว้และไม่รับปากเกินกำลัง':'คุณจดข้อเสนอแนะจากลูกค้าไว้ปรับงานครั้งหน้า การรักษาคนที่กลับมาซื้อซ้ำสำคัญพอ ๆ กับหาลูกค้าใหม่']}}
+ if(Math.floor(b.age)!==Math.floor(Math.max(0,b.age-k/4))){const where=KINGDOMS[b.kingdom][0],outcome=profit>=0?'รายรับพอจ่ายค่าใช้จ่ายและยังเหลือเก็บ':'รายรับยังไม่พอต้นทุน ต้องใช้เงินสำรองที่กันไว้';return {title:'ตรวจบัญชีของ'+def.name,kind:'work',key:'business-account-'+def.id+'-'+Math.floor(b.age),paragraphs:['ที่'+where+' คุณตรวจรายการรับจ่ายทีละบรรทัด '+outcome+' ช่วงล่าสุดมีรายรับ '+revenue.toFixed(2)+' ทอง และต้นทุน '+b.lastCosts.toFixed(2)+' ทอง',b.staff?'ผู้ช่วยนำยอดงานที่ยังค้างมาเทียบกับเวลาที่รับปากลูกค้า คุณทั้งคู่ตกลงว่าจะรับงานเพิ่มเท่าที่ทำไหว':'คุณสลับเวลารับลูกค้ากับการเตรียมสินค้า ถ้าจะขยายร้านจำเป็นต้องคิดทั้งค่าจ้างและเวลาสอนงาน',demand<.85?'คนซื้อของน้อยลงในฤดูนี้ คุณจึงลดของที่เตรียมล่วงหน้าและถามลูกค้าประจำว่าต้องการอะไร':b.quality>=60?'ลูกค้าประจำแนะนำคนรู้จักมาเพราะคุณภาพที่สม่ำเสมอ คุณจดคำสั่งซื้อไว้และไม่รับปากเกินกำลัง':'คุณจดข้อเสนอแนะจากลูกค้าไว้ปรับงานครั้งหน้า การรักษาคนที่กลับมาซื้อซ้ำสำคัญพอ ๆ กับหาลูกค้าใหม่']}}
  return null;
 }
 function valid(s){const l=s.livelihood;if(l===undefined)return true;const n=(v,a=0,b=1e9)=>typeof v==='number'&&Number.isFinite(v)&&v>=a&&v<=b;

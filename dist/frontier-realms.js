@@ -28,7 +28,7 @@ const FrontierRealms=(()=>{
  ['เรือขุดสมบัติทำให้น้ำขุ่นจนชาวปะการังเริ่มซีด ชาวประมงกับเจ้าท่าต่างรอให้ใครสักคนลงมือ',[
  ['จ้างเรือวางทุ่นกันตะกอน',{gold:-20,health:3,bond:5},'น้ำใสค่อย ๆ กลับมา เจ้าของเรือนใต้น้ำส่งกิ่งที่หลุดเองขึ้นมาขอบคุณ'],['ดำน้ำเก็บหลักฐานยื่นปิดจุดขุด',{health:-3,wisdom:6,fame:4},'ภาพจากใต้น้ำทำให้เจ้าท่าหยุดใบอนุญาตจนกว่าจะเปลี่ยนวิธีขุด'],['พาครอบครัวที่ป่วยไปอ่าวสำรอง',{gold:-7,bond:7},'เรือของคุณจอดจนคนสุดท้ายลงน้ำได้ เด็กชาวปะการังจำลายใบเรือไว้']]]
  ];
- const o=(label,effect,success)=>({label,effect,success,risk:0,hint:Object.entries(effect).map(([k,v])=>({gold:'เหรียญ',bond:'สัมพันธ์',wisdom:'ปัญญา',joy:'ความสุข',health:'สุขภาพ',fame:'ชื่อเสียง',magic:'เวท'}[k]||k)+' '+(v>0?'+':'')+v).join(' · ')});
+ const o=(label,effect,success)=>({label,effect,success,risk:0,hint:Object.entries(effect).map(([k,v])=>({gold:'ทอง',bond:'สัมพันธ์',wisdom:'ปัญญา',joy:'ความสุข',health:'สุขภาพ',fame:'ชื่อเสียง',magic:'เวท'}[k]||k)+' '+(v>0?'+':'')+v).join(' · ')});
  definitions.forEach((d,i)=>{const k=8+i;KINGDOMS.push([d.name,d.title,d.terrain,d.rumor]);WorldLore.places[k]=d.places;WorldLore.landmarks[k]=d.landmark;WorldLore.regionalTroubles[k]=d.trouble;LifeContent.kingdoms[k]=d.daily;FantasyNames.regions[k]=d.roots.map(x=>x.split('|'));for(const b of Livelihood.businessCatalog)b.realms[k]=Math.round((.8+((i*7+b.id.length*3)%8)*.075)*100)/100;
   const [pressureText,pressureOptions]=pressures[i],choices=pressureOptions.map(x=>o(...x));
   ev('realm17-'+k+'-pressure',d.trouble[0],pressureText,choices,18,{kingdomOnly:k,max:85,once:true,lifeOpportunity:true,certain:true,scene:d.scene});
