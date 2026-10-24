@@ -38,6 +38,11 @@ Deterministic pixel wardrobes combine 24 palettes, 12 garment cuts, 16 hairstyle
 
 Validation: 10,000 sampled human appearance combinations were distinct, as were 512 rendered human samples; this is a sample result, not a global uniqueness guarantee. All 72 bodies render at seven ages; player and family historical snapshots retain their identity. Real Chromium checked all 72 portraits and 320/390/768/1366 layouts. Run `node scripts/check-wardrobe.cjs` for deterministic rendering and save checks.
 
+## Expanded clothing layers (v23)
+The wardrobe now has 36 garment cuts, 48 palettes, 32 hairstyles, 20 hair colors, 20 textile patterns, 24 accessory selectors, 18 headwear selectors, 12 lower-body styles, 8 footwear styles, 8 sleeve styles, 12 mantle selectors and 16 natural marking variants. Twelve profession groups each choose among five practical garment cuts. Children use a soft-clothing subset. Rear mantles draw behind the body; facial and racial features remain in front. Birth-realm motifs persist after migration, with additional elf, forge, goblin, demon and celestial textile details. Species without clothes retain natural body markings. These are component counts; geometry, profession and age constraints limit valid combinations, and some selectors deliberately leave a slot empty.
+
+Checks cover every component selector, all profession pools, 72 species at seven ages, historical image stability and no changes to save data or story randomness. Chromium checked all 72 portraits and mobile/desktop layouts. No external art assets or additional network requests were introduced.
+
 ## Saves
 Autosave uses IndexedDB, with the current life backed up in localStorage. JSON export/import supports device migration and backup. Saves are validated; event definitions are restored from trusted bundled data. No cloud save, user accounts, shared world, online memorial, server-authoritative scoreboard, or analytics. Users control their own saves; this is a single-player game, not an anticheat architecture.
 

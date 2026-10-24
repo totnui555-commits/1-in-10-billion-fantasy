@@ -96,6 +96,7 @@ function drawFrontier(c,x,y,scale,s,age,race,look,member=null){
   if(race===49){rect(c,5,1,14,4,'#755f59');rect(c,5,4,3,10,'#755f59');for(let i=0;i<3;i++)rect(c,-5+i*5,20+i,3,7,light)}else{poly(c,[[7,4],[5,-4],[12,2],[18,-5],[18,6]],'#d6c57e');poly(c,[[30,14],[37,9],[33,20],[39,19],[29,31]],'#dfd39c');rect(c,8,19,11,2,'#e2d7ac')}
  }else{
   // A shared readable body with a different silhouette and facial construction for each people.
+  Wardrobe.back(c,s,member,age);
   rect(c,4,15,16,16,cloth);rect(c,3,3,18,13,skin);rect(c,1,19,4,11,skin);rect(c,20,18,4,11,skin);rect(c,5,29,5,8,ink);rect(c,15,29,5,8,ink);rect(c,7,7,2,2,ink);rect(c,15,7,2,2,ink);rect(c,8,12,8,1,'#8a7b6d');rect(c,4,1,16,3,'#77685d');
   Wardrobe.garment(c,s,member,age,skin);
   if(race===48){poly(c,[[3,6],[-3,-2],[8,3]],skin);poly(c,[[18,4],[25,-1],[22,9]],skin);rect(c,18,10,9,6,skin);poly(c,[[19,28],[32,31],[27,35],[20,32]],skin);rect(c,7,17,4,7,'#c5a66f')}
@@ -161,6 +162,7 @@ function drawPerson(c,x,y,scale,s,age=30,member=null){
   poly(c,[[6,15],[17,15],[22,23],[21,31],[17,35],[7,35],[2,28],[3,20]],'#e3d2ae');
   poly(c,[[4,20],[19,24],[20,28],[4,24]],coat);rect(c,7,30,12,2,'#c3b18f');
  }else{
+  Wardrobe.back(c,s,member,age);
   const legTop=small?27:29;
   rect(c,4,legTop,5,37-legTop,'#343b37');rect(c,15,legTop,5,37-legTop,'#343b37');
   poly(c,[[3,17],[7,14],[16,14],[21,18],[23,legTop],[19,31],[5,31],[1,27]],coat);
