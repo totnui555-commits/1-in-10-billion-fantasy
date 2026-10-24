@@ -80,7 +80,7 @@ function drawCompanion(c,x,y,scale,pet){
 
 function drawFrontier(c,x,y,scale,s,age,race,look,member=null){
  if(race<48||race>71)return false;
- const p=lifeLook(age),skin=RACES[race][3],cloth=Wardrobe.colors(Wardrobe.style(s,member))[0],ink='#35433f',light='#e2d3ad',beat=Math.floor(sceneTime*p.pace)%4,bob=beat===1?1:0;
+ const p=lifeLook(age),skin=RACES[race][3],cloth=Wardrobe.outfit(s,member,age).shirt,ink='#35433f',light='#e2d3ad',beat=Math.floor(sceneTime*p.pace)%4,bob=beat===1?1:0;
  c.save();c.translate(Math.round(x),Math.round(y+37*scale*(1-p.height))+bob);c.scale(scale*p.height,scale*p.height);
  rect(c,-4,35,36,2,'#283b3540');
  if(age<1){rect(c,4,12,17,22,'#d8cfad');rect(c,7,7,11,7,skin);rect(c,3,23,19,4,cloth);rect(c,8,10,2,2,ink);rect(c,15,10,2,2,ink);if([49,54,55,56,57,69].includes(race)){rect(c,5,8,15,25,'#d6cfaf');rect(c,8,5,9,4,'#e6debf');rect(c,9,16,3,4,skin);rect(c,15,25,3,3,skin)}c.restore();return true}
@@ -150,7 +150,7 @@ function drawEcologyBody(c,x,y,scale,s,age,race,look,member=null){
 }
 
 function drawPerson(c,x,y,scale,s,age=30,member=null){
- const race=member?.race??s.race,look=member?.look||s.look||{hair:0,coat:0,eyes:0},skin=race===0&&Number.isInteger(look.complexion)?['#e8c6a0','#d9af87','#c39570','#ae7b5c','#95644e','#754d41'][look.complexion]||'#c8a783':RACES[race]?.[3]||'#c8a783',baseHair=Wardrobe.hairColors[Wardrobe.style(s,member).hairColor],profile=lifeLook(age),infant=profile.stage==='baby',small=infant||profile.stage==='toddler',elder=profile.stage==='elder',middle=profile.stage==='middle',hair=elder?'#c4c1b2':baseHair,job=member?0:(Number.isInteger(s.job)&&age>=16?s.job:0),coat=Wardrobe.colors(Wardrobe.style(s,member))[0];
+ const race=member?.race??s.race,look=member?.look||s.look||{hair:0,coat:0,eyes:0},skin=race===0&&Number.isInteger(look.complexion)?['#e8c6a0','#d9af87','#c39570','#ae7b5c','#95644e','#754d41'][look.complexion]||'#c8a783':RACES[race]?.[3]||'#c8a783',baseHair=Wardrobe.hairColors[Wardrobe.style(s,member).hairColor],profile=lifeLook(age),infant=profile.stage==='baby',small=infant||profile.stage==='toddler',elder=profile.stage==='elder',middle=profile.stage==='middle',hair=elder?'#c4c1b2':baseHair,job=member?0:(Number.isInteger(s.job)&&age>=16?s.job:0),coat=Wardrobe.outfit(s,member,age).shirt;
  if(nativeNewborn(c,x,y,scale,s,age,race))return;
  if(drawEcologyBody(c,x,y,scale,s,age,race,look,member))return;
  if(drawFrontier(c,x,y,scale,s,age,race,look,member))return;
@@ -210,7 +210,7 @@ function drawPerson(c,x,y,scale,s,age=30,member=null){
   rect(c,1,23+(beat===2?1:0),3,4,skin);rect(c,21,23+(beat===0?1:0),3,4,skin);
   if(profile.stage==='child'){rect(c,18,18,6,10,'#ad8960');rect(c,19,19,1,7,'#d9c391')}
   if(profile.stage==='teen'){rect(c,2,16,2,12,'#c2b787');rect(c,17,25,6,5,'#a18459')}
-  if((look.coat||0)%3===1)poly(c,[[3,18],[-2,29],[4,29],[8,22]],'#92764c');
+  if((look.coat||0)%3===1)poly(c,[[3,18],[-2,29],[4,29],[8,22]],Wardrobe.outfit(s,member,age).cape);
   if(elder){rect(c,24,23,2,14,'#806747');rect(c,21,22,5,2,'#806747');rect(c,8,11,1,1,'#9c8877');rect(c,18,11,1,1,'#9c8877')}
  }
  if(!infant)Workwear.equipment(c,s,member,age,race);

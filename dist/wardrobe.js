@@ -15,10 +15,11 @@ const Wardrobe=(()=>{
  // The birth realm supplies a woven motif; moving does not change one's clothes.
  function culture(s){return Math.abs(s.homeKingdom??s.kingdom??0)%16}
  function colors(v){return palettes[v.palette]}
+ function outfit(s,m=null,age=30){const assigned=typeof Workwear==='undefined'?null:Workwear.dyes(s,m,age);if(assigned)return assigned;const v=style(s,m),[shirt,trim,shade]=colors(v);return{shirt,trim,shade,cape:palettes[v.accent][2],lower:palettes[v.accent][0],lowerShade:palettes[v.accent][2],leather:shade,accent:trim,metal:'#9ca9a3',linen:'#e1d7b7'}}
  const box=(c,x,y,w,h,col)=>{c.fillStyle=col;c.fillRect(x,y,w,h)};
- function garment(c,s,m,age,skin){const v=style(s,m),[base,trim,dark]=colors(v),r=role(s,m,age),cut=cutFor(s,m,age);
+ function garment(c,s,m,age,skin){const v=style(s,m),dye=outfit(s,m,age),{shirt:base,trim,shade:dark}=dye,r=role(s,m,age),cut=cutFor(s,m,age);
   if(age<1){box(c,4,22,16,3,base);box(c,7,29,10,2,trim);return}
-  box(c,4,16,16,15,base);box(c,5,29,5,8,dark);box(c,15,29,5,8,dark);box(c,4,35,6,2,age<4?skin:dark);box(c,15,35,6,2,age<4?skin:dark);
+  box(c,4,16,16,15,base);box(c,5,29,5,8,dye.lower);box(c,15,29,5,8,dye.lower);box(c,4,35,6,2,age<4?skin:dark);box(c,15,35,6,2,age<4?skin:dark);
   if(cut===0){box(c,10,17,4,12,trim);box(c,11,18,2,6,base)}
   if(cut===1){box(c,5,17,5,12,dark);box(c,15,17,4,12,dark);box(c,10,17,5,3,trim)}
   if(cut===2){box(c,6,18,2,11,dark);box(c,16,18,2,11,dark);box(c,7,24,11,7,dark);box(c,8,25,3,3,trim)}
@@ -79,25 +80,25 @@ const Wardrobe=(()=>{
    if(v.pattern===18){box(c,6,20+i*3,12,1,trim);box(c,8+i*3,19,1,10,dark)}
    if(v.pattern===19){box(c,9+i,19+i*2,2,2,trim);box(c,16-i,19+i*2,2,2,trim)}
   }
-  const lower=age<4?v.lower%3:v.lower,shoe=age<4?skin:dark;
-  if(lower===1){box(c,4,29,17,6,base);box(c,8,30,1,5,trim);box(c,17,30,1,5,trim)}
-  if(lower===2){box(c,4,29,7,4,base);box(c,14,29,7,4,base);box(c,5,33,5,2,skin);box(c,15,33,5,2,skin)}
-  if(lower===3){box(c,3,29,19,7,trim);for(let x=5;x<21;x+=4)box(c,x,30,1,6,dark)}
-  if(lower===4){box(c,4,29,7,7,base);box(c,14,29,7,7,base);box(c,6,31,2,3,trim);box(c,16,32,2,2,trim)}
+  const lower=age<4?v.lower%3:v.lower,shoe=age<4?skin:dye.leather,bottom=dye.lower,legShade=dye.lowerShade;
+  if(lower===1){box(c,4,29,17,6,bottom);box(c,8,30,1,5,trim);box(c,17,30,1,5,trim)}
+  if(lower===2){box(c,4,29,7,4,bottom);box(c,14,29,7,4,bottom);box(c,5,33,5,2,skin);box(c,15,33,5,2,skin)}
+  if(lower===3){box(c,3,29,19,7,trim);for(let x=5;x<21;x+=4)box(c,x,30,1,6,legShade)}
+  if(lower===4){box(c,4,29,7,7,bottom);box(c,14,29,7,7,bottom);box(c,6,31,2,3,trim);box(c,16,32,2,2,trim)}
   if(lower===5){box(c,5,30,5,5,trim);box(c,15,30,5,5,trim)}
-  if(lower===6){box(c,4,29,17,7,dark);box(c,11,30,3,6,trim)}
-  if(lower===7){box(c,3,29,8,6,base);box(c,14,29,8,6,base);box(c,4,34,7,1,trim);box(c,14,34,7,1,trim)}
-  if(lower===8){box(c,4,29,17,6,base);box(c,4,33,17,2,trim);box(c,11,29,2,6,dark)}
-  if(lower===9){box(c,5,29,5,7,dark);box(c,15,29,5,7,dark);box(c,5,29,2,6,trim);box(c,18,29,2,6,trim)}
-  if(lower===10){box(c,3,29,19,7,base);box(c,3,31,19,1,trim);box(c,3,34,19,1,trim)}
-  if(lower===11){box(c,4,29,7,7,trim);box(c,14,29,7,7,trim);box(c,5,31,5,1,dark);box(c,15,33,5,1,dark)}
+  if(lower===6){box(c,4,29,17,7,legShade);box(c,11,30,3,6,trim)}
+  if(lower===7){box(c,3,29,8,6,bottom);box(c,14,29,8,6,bottom);box(c,4,34,7,1,trim);box(c,14,34,7,1,trim)}
+  if(lower===8){box(c,4,29,17,6,bottom);box(c,4,33,17,2,trim);box(c,11,29,2,6,legShade)}
+  if(lower===9){box(c,5,29,5,7,legShade);box(c,15,29,5,7,legShade);box(c,5,29,2,6,trim);box(c,18,29,2,6,trim)}
+  if(lower===10){box(c,3,29,19,7,bottom);box(c,3,31,19,1,trim);box(c,3,34,19,1,trim)}
+  if(lower===11){box(c,4,29,7,7,trim);box(c,14,29,7,7,trim);box(c,5,31,5,1,legShade);box(c,15,33,5,1,legShade)}
   box(c,4,35,6,2,shoe);box(c,15,35,6,2,shoe);
-  if(age>=4){if(v.boots===1||v.boots===5){box(c,5,32,5,5,dark);box(c,15,32,5,5,dark);box(c,5,32,5,1,trim);box(c,15,32,5,1,trim)}
+  if(age>=4){if(v.boots===1||v.boots===5){box(c,5,32,5,5,dye.leather);box(c,15,32,5,5,dye.leather);box(c,5,32,5,1,trim);box(c,15,32,5,1,trim)}
    if(v.boots===2){box(c,4,35,6,2,trim);box(c,15,35,6,2,trim)}
    if(v.boots===3){box(c,5,34,5,2,skin);box(c,15,34,5,2,skin);box(c,6,35,1,2,trim);box(c,16,35,1,2,trim)}
-   if(v.boots===4){box(c,4,34,6,3,base);box(c,15,34,6,3,base)}
-   if(v.boots===6){box(c,5,32,5,5,trim);box(c,15,32,5,5,trim);box(c,7,33,1,3,dark);box(c,17,33,1,3,dark)}
-   if(v.boots===7){box(c,4,35,7,2,dark);box(c,14,35,7,2,dark);box(c,4,36,7,1,trim);box(c,14,36,7,1,trim)}}
+   if(v.boots===4){box(c,4,34,6,3,dye.leather);box(c,15,34,6,3,dye.leather)}
+   if(v.boots===6){box(c,5,32,5,5,trim);box(c,15,32,5,5,trim);box(c,7,33,1,3,dye.leather);box(c,17,33,1,3,dye.leather)}
+   if(v.boots===7){box(c,4,35,7,2,dye.leather);box(c,14,35,7,2,dye.leather);box(c,4,36,7,1,trim);box(c,14,36,7,1,trim)}}
   const race=m?.race??s.race??0;
   if([1,2,3].includes(race)){box(c,11,22,1,5,trim);box(c,9,23,2,1,trim);box(c,12,25,2,1,trim)}
   if([4,11,31].includes(race)){box(c,9,22,6,4,dark);box(c,10,23,4,2,trim);box(c,11,22,2,4,trim)}
@@ -111,34 +112,34 @@ const Wardrobe=(()=>{
   if(motif%4===3){box(c,6,26,1,3,trim);box(c,8,25,1,3,trim);box(c,7,26,1,2,dark)}
   box(c,17,25+(motif>>2),2,1,trim);
   box(c,4,29,16,2,dark);box(c,10,29,3,2,trim);
-  if(v.accessory===1){box(c,17,23,5,6,dark);box(c,18,24,3,1,trim)}
-  if(v.accessory===2){box(c,3,17,2,11,trim);box(c,4,17,2,2,trim);box(c,6,19,2,2,trim);box(c,8,21,2,2,trim)}
-  if(v.accessory===3){box(c,7,17,11,2,trim);box(c,16,19,3,6,trim)}
-  if(v.accessory===4){box(c,17,18,4,7,dark);box(c,18,19,2,5,trim)}
-  if(v.accessory===5){box(c,5,18,3,3,trim);box(c,6,19,1,1,dark)}
-  if(v.accessory===6){box(c,19,25,3,5,trim);box(c,20,24,1,2,dark)}
-  if(v.accessory===7&&age>=12){box(c,0,19,2,12,dark);box(c,1,19,3,2,trim)}
-  if(v.accessory===8){box(c,17,20,5,9,dark);box(c,18,21,3,6,trim);box(c,18,23,3,1,base)}
-  if(v.accessory===9){box(c,2,17,3,13,trim);box(c,2,28,6,3,dark)}
-  if(v.accessory===10){box(c,6,17,13,2,dark);box(c,17,19,3,8,trim)}
-  if(v.accessory===11){box(c,17,26,5,5,base);box(c,18,27,3,2,trim)}
-  if(v.accessory===12){box(c,19,19,4,11,trim);box(c,20,20,1,9,dark)}
-  if(v.accessory===13){box(c,3,17,4,5,trim);box(c,4,18,2,3,base)}
-  if(v.accessory===14){box(c,9,17,7,1,trim);box(c,11,18,3,3,dark);box(c,12,19,1,1,trim)}
-  if(v.accessory===15){box(c,1,27,6,4,dark);box(c,2,28,4,2,trim)}
-  if(v.accessory===16){box(c,17,24,5,7,trim);box(c,18,25,3,1,dark);box(c,18,29,3,1,dark)}
-  if(v.accessory===17){box(c,5,18,2,9,trim);box(c,18,18,2,9,trim);box(c,6,26,13,2,trim)}
-  if(v.accessory===18){box(c,2,17,3,4,dark);box(c,20,17,3,4,dark);box(c,3,18,1,1,trim);box(c,21,18,1,1,trim)}
-  if(v.accessory===19){box(c,6,16,12,2,trim);box(c,9,18,6,2,dark)}
-  if(v.accessory===20&&age>=18){box(c,-2,20,3,13,dark);box(c,-3,19,5,2,trim);box(c,-1,22,1,8,trim)}
-  if(v.accessory===21){box(c,20,26,4,5,dark);box(c,21,27,2,2,trim)}
-  if(v.accessory===22){box(c,6,17,12,1,trim);box(c,7,18,10,1,dark);box(c,9,19,6,1,trim)}
-  if(v.accessory===23){box(c,17,20,5,10,dark);box(c,18,21,3,8,base);box(c,18,22,3,1,trim);box(c,18,28,3,1,trim)}
+  if(v.accessory===1){box(c,17,23,5,6,dye.leather);box(c,18,24,3,1,dye.accent)}
+  if(v.accessory===2){box(c,3,17,2,11,dye.accent);box(c,4,17,2,2,dye.accent);box(c,6,19,2,2,dye.accent);box(c,8,21,2,2,dye.accent)}
+  if(v.accessory===3){box(c,7,17,11,2,dye.accent);box(c,16,19,3,6,dye.accent)}
+  if(v.accessory===4){box(c,17,18,4,7,dye.leather);box(c,18,19,2,5,dye.accent)}
+  if(v.accessory===5){box(c,5,18,3,3,dye.accent);box(c,6,19,1,1,dye.leather)}
+  if(v.accessory===6){box(c,19,25,3,5,dye.accent);box(c,20,24,1,2,dye.leather)}
+  if(v.accessory===7&&age>=12){box(c,0,19,2,12,dye.leather);box(c,1,19,3,2,dye.accent)}
+  if(v.accessory===8){box(c,17,20,5,9,dye.leather);box(c,18,21,3,6,dye.accent);box(c,18,23,3,1,base)}
+  if(v.accessory===9){box(c,2,17,3,13,dye.accent);box(c,2,28,6,3,dye.leather)}
+  if(v.accessory===10){box(c,6,17,13,2,dye.leather);box(c,17,19,3,8,dye.accent)}
+  if(v.accessory===11){box(c,17,26,5,5,base);box(c,18,27,3,2,dye.accent)}
+  if(v.accessory===12){box(c,19,19,4,11,dye.accent);box(c,20,20,1,9,dye.leather)}
+  if(v.accessory===13){box(c,3,17,4,5,dye.accent);box(c,4,18,2,3,base)}
+  if(v.accessory===14){box(c,9,17,7,1,dye.accent);box(c,11,18,3,3,dye.leather);box(c,12,19,1,1,dye.accent)}
+  if(v.accessory===15){box(c,1,27,6,4,dye.leather);box(c,2,28,4,2,dye.accent)}
+  if(v.accessory===16){box(c,17,24,5,7,dye.accent);box(c,18,25,3,1,dye.leather);box(c,18,29,3,1,dye.leather)}
+  if(v.accessory===17){box(c,5,18,2,9,dye.accent);box(c,18,18,2,9,dye.accent);box(c,6,26,13,2,dye.accent)}
+  if(v.accessory===18){box(c,2,17,3,4,dye.leather);box(c,20,17,3,4,dye.leather);box(c,3,18,1,1,dye.accent);box(c,21,18,1,1,dye.accent)}
+  if(v.accessory===19){box(c,6,16,12,2,dye.accent);box(c,9,18,6,2,dye.leather)}
+  if(v.accessory===20&&age>=18){box(c,-2,20,3,13,dye.leather);box(c,-3,19,5,2,dye.accent);box(c,-1,22,1,8,dye.accent)}
+  if(v.accessory===21){box(c,20,26,4,5,dye.leather);box(c,21,27,2,2,dye.accent)}
+  if(v.accessory===22){box(c,6,17,12,1,dye.accent);box(c,7,18,10,1,dye.leather);box(c,9,19,6,1,dye.accent)}
+  if(v.accessory===23){box(c,17,20,5,10,dye.leather);box(c,18,21,3,8,base);box(c,18,22,3,1,dye.accent);box(c,18,28,3,1,dye.accent)}
   if(typeof Workwear!=='undefined')Workwear.uniform(c,s,m,age);
   if((s.rank||0)>=5&&age>=18){box(c,5,17,1,9,trim);box(c,18,17,1,9,trim);box(c,12,20,2,2,'#d1b16d')}
  }
  // Rear layers are drawn before the body, preserving arms, tails and wing outlines.
- function back(c,s,m,age){if(age<4)return;const v=style(s,m),[base,trim,dark]=colors(v),col=palettes[v.accent][2];
+ function back(c,s,m,age){if(age<4)return;const v=style(s,m),{shirt:base,trim,shade:dark,cape:col}=outfit(s,m,age);
   if(v.mantle===1){box(c,0,17,24,15,col);box(c,-1,29,26,4,col)}
   if(v.mantle===2){box(c,-1,16,26,7,col);box(c,0,23,24,3,trim)}
   if(v.mantle===3){box(c,-1,17,7,18,col);box(c,0,34,5,2,trim)}
@@ -186,7 +187,7 @@ const Wardrobe=(()=>{
   if(h===31){b(3,1,18,4);b(3,5,3,10);b(18,5,3,10);b(1,14,5,5);b(19,14,5,5);b(2,18,4,2,colors(v)[1]);b(20,18,4,2,colors(v)[1])}
   if(age>=40&&age<60){b(4,5,2,4,'#acaaa0');b(18,5,2,4,'#acaaa0')}
  }
- function headwear(c,s,m,age,race){if(age<4||![0,1,2,3,4,11,12,26,27].includes(race))return;const v=style(s,m),[base,trim,dark]=colors(v),r=role(s,m,age),hatDefault=age<12?[0,1,2,5,6,8,11,15][v.hat%8]:r==='farmer'?[1,8,12,15][v.hat%4]:r==='guard'?[3,9,13,17][v.hat%4]:r==='mage'?[4,10,14,16][v.hat%4]:v.hat,hat=typeof Workwear==='undefined'?hatDefault:Workwear.hats(s,m,age,hatDefault);
+ function headwear(c,s,m,age,race){if(age<4||![0,1,2,3,4,11,12,26,27].includes(race))return;const v=style(s,m),{shirt:base,trim,shade:dark}=outfit(s,m,age),r=role(s,m,age),hatDefault=age<12?[0,1,2,5,6,8,11,15][v.hat%8]:r==='farmer'?[1,8,12,15][v.hat%4]:r==='guard'?[3,9,13,17][v.hat%4]:r==='mage'?[4,10,14,16][v.hat%4]:v.hat,hat=typeof Workwear==='undefined'?hatDefault:Workwear.hats(s,m,age,hatDefault);
   if(hat===1){box(c,0,1,24,3,trim);box(c,5,-3,14,4,base);box(c,6,0,12,1,dark)}
   if(hat===2){box(c,3,0,18,3,dark);box(c,6,-3,12,3,base);box(c,18,2,5,2,dark)}
   if(hat===3){box(c,4,-1,16,5,'#879791');box(c,11,-3,3,5,trim);box(c,4,3,2,5,dark);box(c,18,3,2,5,dark)}
@@ -222,5 +223,5 @@ const Wardrobe=(()=>{
   });
   if(type==='core'||type==='stone'){box(c,11,21,4,4,base);box(c,12,22,2,2,trim)}
  }
- return{style,identity,colors,role,cutFor,culture,back,garment,hair,headwear,native,palettes,hairColors,uniforms};
+ return{style,identity,colors,outfit,role,cutFor,culture,back,garment,hair,headwear,native,palettes,hairColors,uniforms};
 })();

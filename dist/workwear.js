@@ -16,9 +16,23 @@ const Workwear=(()=>{
  }
  function category(s,m,age){const r=resolve(s,m,age);return r?base[r]:null}
  function hats(s,m,age,fallback){const r=resolve(s,m,age),v=Wardrobe.style(s,m).hat;const choices=({smith:[5,7,11],engineer:[2,5,9],baker:[11,15],cook:[11,15],healer:[5,6],scholar:[0,2,7],clerk:[0,2,7],ranger:[2,12,15],explorer:[2,12,15],sailor:[2,5,15],courier:[2,5,12],farmer:[1,8,12,15],beastkeeper:[1,5,8],diplomat:[0,6,7],judge:[2,14],priest:[6,14,16],sovereign:[6,16],artist:[2,5,10]})[r];return choices?choices[v%choices.length]:fallback}
+ // Role-aware dye channels. Clothing changes with the recorded job, not identity.
+ const dyeFamilies={
+  mage:{h:[258,277,224,302],s:46,l:39},healer:{h:[171,187,156,203],s:46,l:42},guard:{h:[211,352,224,194],s:43,l:37},farmer:{h:[99,125,43,23],s:40,l:37},craft:{h:[17,200,37,215],s:30,l:31},traveler:{h:[142,196,31,223],s:40,l:34},priest:{h:[274,220,169,329],s:40,l:40},merchant:{h:[338,265,31,202],s:48,l:36},artist:{h:[332,280,15,191],s:56,l:45},sailor:{h:[207,191,224,172],s:53,l:38},scholar:{h:[224,168,277,352],s:40,l:38},cook:{h:[18,199,342,114],s:42,l:42}
+ };
+ const dyeCache=new Map;
+ function mix(n){n=Math.imul(n^(n>>>16),2246822507);return(n^(n>>>13))>>>0}
+ function hex(h,s,l){h=((h%360)+360)%360;s/=100;l/=100;const a=s*Math.min(l,1-l),f=n=>{const k=(n+h/30)%12;return Math.round(255*(l-a*Math.max(-1,Math.min(k-3,9-k,1))))};return '#'+[f(0),f(8),f(4)].map(v=>v.toString(16).padStart(2,'0')).join('')}
+ function dyes(s,m,age){const role=resolve(s,m,age),family=role&&base[role],def=dyeFamilies[family];if(!def)return null;
+  const label=m?m.occupation:JOBS[s.job]?.[0],v=Wardrobe.style(s,m);let n=v.key;for(const ch of label||role)n=mix(n^ch.charCodeAt(0));const key=v.key+':'+label;if(dyeCache.has(key))return dyeCache.get(key);
+  const at=i=>mix(n+i*104729),h=def.h[at(1)%def.h.length]+(at(2)%13)-6,sat=def.s+(at(3)%11)-5,light=def.l+(at(4)%11)-5;
+  const capeHue=h+[25,-25,150,190][at(5)%4],trimHue=h+[38,175,215,320][at(6)%4],legHue=h+[15,165,205,325][at(7)%4];
+  const d={shirt:hex(h,sat,light),trim:hex(trimHue,36+at(8)%22,65+at(9)%12),shade:hex(h,sat-9,Math.max(18,light-15)),cape:hex(capeHue,32+at(10)%17,26+at(11)%15),lower:hex(legHue,19+at(12)%22,26+at(13)%16),lowerShade:hex(legHue,20,20+at(14)%10),leather:hex([18,29,209,344][at(15)%4],20+at(16)%14,22+at(17)%12),accent:hex(trimHue,51,53+at(18)%15),metal:hex([204,213,32,178][at(19)%4],10+at(20)%10,56+at(21)%14),linen:hex(h,12+at(22)%10,82+at(23)%9)};
+  if(dyeCache.size>=2048)dyeCache.clear();dyeCache.set(key,d);return d;
+ }
  const b=(c,x,y,w,h,color)=>{c.fillStyle=color;c.fillRect(x,y,w,h)};
- function uniform(c,s,m,age){const r=resolve(s,m,age);if(!r)return;const [a,t,d]=Wardrobe.colors(Wardrobe.style(s,m)),metal='#9ca9a3',paper='#e1d7b7';
-  if(['smith','carpenter','potter','tailor','engineer','luthier','miner'].includes(r)){b(c,8,17,2,8,d);b(c,15,17,2,8,d);b(c,7,23,12,9,r==='potter'?t:d);b(c,9,25,8,3,a);b(c,9,29,2,2,t);b(c,15,29,2,2,t)}
+ function uniform(c,s,m,age){const r=resolve(s,m,age);if(!r)return;const dye=Wardrobe.outfit(s,m,age),{shirt:a,trim:t,shade:d,metal,linen:paper}=dye;
+  if(['smith','carpenter','potter','tailor','engineer','luthier','miner'].includes(r)){b(c,8,17,2,8,d);b(c,15,17,2,8,d);b(c,7,23,12,9,r==='potter'?a:d);b(c,9,25,8,3,t);b(c,9,29,2,2,t);b(c,15,29,2,2,t)}
   if(['baker','cook','tea','innkeeper'].includes(r)){b(c,8,18,9,14,paper);b(c,6,25,13,6,paper);b(c,9,26,7,1,t);b(c,10,19,2,3,a)}
   if(['mage','priest','judge'].includes(r)){b(c,4,28,17,7,a);b(c,5,33,15,2,t);b(c,10,17,4,17,t);b(c,11,20,2,3,d)}
   if(['guard','fighter'].includes(r)){b(c,3,16,6,4,metal);b(c,16,16,6,4,metal);b(c,6,20,12,8,metal);b(c,8,21,8,2,d);b(c,11,23,3,4,t);b(c,5,29,15,3,d)}
@@ -31,7 +45,7 @@ const Workwear=(()=>{
   if(['farmer','beastkeeper','ranger'].includes(r)){b(c,5,18,2,11,d);b(c,17,18,2,11,d);b(c,7,25,11,5,t);b(c,8,26,3,2,a)}
   if(['explorer','courier','driver'].includes(r)){for(let i=0;i<6;i++)b(c,5+i*2,17+i*2,2,2,d);b(c,17,25,5,6,d);b(c,18,26,3,1,t)}
  }
- function equipment(c,s,m,age,race){const r=resolve(s,m,age);if(!r)return;const p=typeof Ecology==='undefined'?null:Ecology.profile(race);if(p&&(!p.civic||!p.grasp))return;const [a,t,d]=Wardrobe.colors(Wardrobe.style(s,m)),wood='#7f644b',metal='#a6b4af',paper='#e3d8b8',ink='#35453f';
+ function equipment(c,s,m,age,race){const r=resolve(s,m,age);if(!r)return;const p=typeof Ecology==='undefined'?null:Ecology.profile(race);if(p&&(!p.civic||!p.grasp))return;const {shirt:a,accent:t,leather:d,metal,linen:paper}=Wardrobe.outfit(s,m,age),wood='#7f644b',ink='#35453f';
   // Compact tools stay within portrait bounds and do not imply inventory/stat grants.
   if(['smith','engineer','carpenter'].includes(r)){b(c,24,23,2,13,wood);b(c,21,21,8,4,metal);if(r==='engineer'){b(c,22,21,2,2,ink);b(c,26,21,2,2,ink)}}
   if(r==='potter'){b(c,22,26,6,7,t);b(c,23,24,4,2,a);b(c,24,25,2,1,d)}
@@ -49,5 +63,5 @@ const Workwear=(()=>{
   if(['merchant','diplomat','innkeeper','sovereign'].includes(r)){b(c,22,28,7,7,d);b(c,23,26,5,3,t);b(c,24,30,3,3,t);b(c,25,31,1,1,paper)}
   if(['explorer','courier','driver','sailor','waterkeeper','rogue'].includes(r)){b(c,22,26,7,9,d);b(c,23,27,5,7,a);b(c,24,29,3,1,t);if(r==='courier'){b(c,23,28,5,4,paper);b(c,25,30,1,1,d)}if(r==='sailor'||r==='waterkeeper'){b(c,24,28,3,5,t);b(c,25,27,1,7,ink)}}
  }
- return{groups,base,resolve,category,hats,uniform,equipment};
+ return{groups,base,resolve,category,hats,uniform,equipment,dyes,dyeFamilies};
 })();

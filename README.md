@@ -48,6 +48,11 @@ All 123 professions now have explicit workwear assignments. Smiths, tailors, hea
 
 Historical player outfits use the recorded job; family outfits use recorded occupations. Known guest portraits now retain a bounded optional occupation field, compatible with older snapshots. Checks cover all 123 mappings, outfit changes, unchanged appearance identity, historical images, and real career-menu changes through reload in Chromium.
 
+## Profession dyes (v25)
+Clothing is no longer locked to the character's birth palette. Twelve profession color families now supply bounded, coordinated dye choices, keyed to both character identity and the exact recorded job/occupation. Shirt, trim, shadow, cape, lower fabric, leather, accent, metal and linen have separate channels. Mage, performer, gardener, healer and other work families read as different outfits even on the same character. Hair, skin and body identity remain unchanged. Native body markings keep their original biological colors.
+
+Validation: the 123 careers produced 123 distinct dye combinations for the reference character; seven sampled work families each produced at least 48 shirt colors across 64 identities. Real Chromium career-menu changes verified 12 distinct dye combinations and unchanged hair/face identity. Diary scenes reconstruct the dyes of the saved career, including after a subsequent career change. These are sample results, not a global uniqueness claim.
+
 ## Saves
 Autosave uses IndexedDB, with the current life backed up in localStorage. JSON export/import supports device migration and backup. Saves are validated; event definitions are restored from trusted bundled data. No cloud save, user accounts, shared world, online memorial, server-authoritative scoreboard, or analytics. Users control their own saves; this is a single-player game, not an anticheat architecture.
 
