@@ -57,6 +57,8 @@
     "belief-controls.js",
     "life-hazards.js",
     "hazard-controls.js",
+    "species-society.js",
+    "society-controls.js",
     "app.js"
   ],
   "styles": [
@@ -73,6 +75,7 @@
     "ecology.css",
     "epoch.css",
     "belief.css",
-    "hazards.css"
+    "hazards.css",
+    "society.css"
   ]
 }

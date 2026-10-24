@@ -28,7 +28,7 @@ const families=[
 ];
 const familyById=Object.fromEntries(families.map(f=>[f.id,f]));
 function hash(n){n=Math.imul(n^(n>>>16),2246822507);return(n^(n>>>13))>>>0}
-function chooseFamily(s){const draw=hash(s.seed^0x7a1d9e5)%100;if(draw<4)return'hero';if(draw<8)return'demonKing';if(draw<14&&[9,36].includes(s.race))return'dragonCourt';if(draw<30)return'merchantHouse';if(draw<45)return'exiles';if(draw<60)return'scholars';return'ordinary'}
+function chooseFamily(s){const draw=hash(s.seed^0x7a1d9e5)%100;if(s.race!==0&&typeof SpeciesSociety!=='undefined')return SpeciesSociety.legacyFamily(s,draw);if(draw<4)return'hero';if(draw<8)return'demonKing';if(draw<14&&[9,36].includes(s.race))return'dragonCourt';if(draw<30)return'merchantHouse';if(draw<45)return'exiles';if(draw<60)return'scholars';return'ordinary'}
 function ensure(s,newborn=false){
  if(!s.heritage){const familyId=newborn?chooseFamily(s):'ordinary';s.heritage={version:1,familyId,birthRank:s.rank,note:familyById[familyId].description,decorated:false};}
  const h=s.heritage,f=familyById[h.familyId];

@@ -36,7 +36,7 @@ const SceneCatalog=(()=>{
   if(!env)env=textRules.find(([rx])=>rx.test(text))?.[1];
   if(!env&&e.kind==='home')env='kitchen';
   if(!env&&e.kind==='training')env=({wisdom:'study',magic:'alchemy',power:'barracks',bond:'kitchen',joy:'music',health:'garden'})[s.focus];
-  if(!env)env=/ปีศาจ|จอมมาร/.test(s.household?.originNote||'')&&s.rank>=5?'council':bio<12?'classroom':bio>60?'garden':['forest','river','market','garden','study','bedroom','guild','music'][(s.seed+(current?.id||0))%8];
+  if(!env)env=/ปีศาจ|จอมมาร/.test(s.household?.originNote||'')&&(s.race===0?s.rank>=5:typeof SpeciesSociety!=='undefined'&&(s.societyVoice??SpeciesSociety.metrics(s).voice)>=60)?'council':bio<12?'classroom':bio>60?'garden':['forest','river','market','garden','study','bedroom','guild','music'][(s.seed+(current?.id||0))%8];
   if(!override&&typeof Ecology!=='undefined')env=Ecology.scene(s,e,env);const overrideRealm=byId.get(override)?.realm;const realm=Number.isInteger(overrideRealm)?overrideRealm:Number.isInteger(e.realm)&&e.realm>=0&&e.realm<styles().length?e.realm:Number.isInteger(s.kingdom)?s.kingdom:0;
   const record=byId.get(env+'-realm-'+realm)||all[0];
   return {...record,phase:e.phase||current?.phase||'ยามเช้า',season:e.season||current?.season||'',title,activity:e.activity||'',foreign:realm!==(s.homeKingdom??realm)};

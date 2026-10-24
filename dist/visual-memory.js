@@ -15,7 +15,7 @@ const VisualMemory=(()=>{
  }
  function validGuest(g){return g===null||g===undefined||!!g&&smallText(g.name)&&(g.occupation===undefined||smallText(g.occupation,200))&&integer(g.race,0,RACES.length-1)&&validLook(g.look)&&finite(g.age,0,10000)}
  function capture(s,e){
-  e.visual={version:1,ecology:s.ecology?{mode:s.ecology.mode,learning:s.ecology.learning}:undefined,guest:e.guest||(e.kind==='project'?actor(s):null),race:s.race,kingdom:s.kingdom,rank:s.rank,age:s.age,quarter:s.calendar?.quarter||0,seed:s.seed,look:look(s.look),job:s.job,dead:!!s.dead,
+  e.visual={version:1,...(s.race!==0&&typeof SpeciesSociety!=='undefined'?{societyAccess:SpeciesSociety.metrics(s).access,societyVoice:SpeciesSociety.metrics(s).voice}:{}),ecology:s.ecology?{mode:s.ecology.mode,learning:s.ecology.learning}:undefined,guest:e.guest||(e.kind==='project'?actor(s):null),race:s.race,kingdom:s.kingdom,rank:s.rank,age:s.age,quarter:s.calendar?.quarter||0,seed:s.seed,look:look(s.look),job:s.job,dead:!!s.dead,
    pet:s.pet?{name:s.pet.name,bond:s.pet.bond,speciesId:s.pet.speciesId||null,health:s.pet.health??85,trained:s.pet.trained??0}:null,
    items:(s.lifeChoices?.inventory||[]).slice(0,typeof LifeChoices==='undefined'?36:LifeChoices.shop.length),hobby:s.lifeChoices?.hobby||null,
    cast:(s.household?.members||[]).slice(0,8).map(m=>({id:String(m.id).slice(0,80),name:String(m.name).slice(0,100),role:String(m.role).slice(0,200),occupation:String(m.occupation).slice(0,200),race:m.race,look:look(m.look),ageAtBirth:m.ageAtBirth,alive:m.alive,deathAge:m.deathAge??null}))};
@@ -32,7 +32,7 @@ const VisualMemory=(()=>{
  function validLook(l){return !!l&&integer(l.hair,0,30)&&integer(l.coat,0,30)&&integer(l.eyes,0,30)&&(l.complexion===undefined||integer(l.complexion,0,5))}
  function validFrame(v){
   if(v?.ecology&&(!['native','exchange'].includes(v.ecology.mode)||!['native','exchange'].includes(v.ecology.learning)))return false;
-  if(!v||!validGuest(v.guest)||v.version!==1||!integer(v.race,0,RACES.length-1)||!integer(v.kingdom,0,KINGDOMS.length-1)||!integer(v.rank,0,CLASSES.length-1)||!finite(v.age,0,10000)||!integer(v.quarter,0,3)||!integer(v.seed,0,4294967295)||!validLook(v.look)||!(v.job===null||integer(v.job,0,JOBS.length-1))||typeof v.dead!=='boolean')return false;
+  if(!v||(v.societyAccess!==undefined&&!finite(v.societyAccess,0,100))||(v.societyVoice!==undefined&&!finite(v.societyVoice,0,100))||!validGuest(v.guest)||v.version!==1||!integer(v.race,0,RACES.length-1)||!integer(v.kingdom,0,KINGDOMS.length-1)||!integer(v.rank,0,CLASSES.length-1)||!finite(v.age,0,10000)||!integer(v.quarter,0,3)||!integer(v.seed,0,4294967295)||!validLook(v.look)||!(v.job===null||integer(v.job,0,JOBS.length-1))||typeof v.dead!=='boolean')return false;
   const items=typeof LifeChoices==='undefined'?[]:LifeChoices.shop;
   if(!Array.isArray(v.items)||v.items.length>items.length||new Set(v.items).size!==v.items.length||!v.items.every(id=>items.some(x=>x.id===id))||!(v.hobby===null||v.items.includes(v.hobby)))return false;
   if(v.pet&&(!PETS.includes(v.pet.name)||!finite(v.pet.bond,0,100)||!finite(v.pet.health,0,100)||!finite(v.pet.trained,0,100)||!(v.pet.speciesId===null||typeof LifeChoices!=='undefined'&&LifeChoices.petCatalog.some(p=>p.id===v.pet.speciesId&&p.name===v.pet.name))))return false;
@@ -43,7 +43,7 @@ const VisualMemory=(()=>{
  function sceneRecord(s,e){const realm=Number.isInteger(e.realm)?e.realm:KINGDOMS.findIndex(k=>k[0]===e.where);return {...e,legacyAgeMismatch:false,legacyEcologyMismatch:false,realm:realm>=0&&realm<KINGDOMS.length?realm:s.homeKingdom??s.kingdom}}
  function read(s,e){
   let entry=sceneRecord(s,e);const v=has(e)&&!e.legacyEcologyMismatch?e.visual:null;if(v?.guest)entry={...entry,guest:{...v.guest,look:{...v.guest.look}}};
-  if(v)return {ecology:v.ecology?{...v.ecology}:undefined,race:v.race,kingdom:v.kingdom,homeKingdom:s.homeKingdom??v.kingdom,rank:v.rank,age:v.age,seed:v.seed,look:{...v.look},job:v.job,dead:v.dead,pet:v.pet?{...v.pet}:null,calendar:{quarter:v.quarter,pending:false},household:{members:v.cast.map(m=>({...m,look:{...m.look}}))},lifeChoices:{inventory:v.items.slice(),hobby:v.hobby},diary:{entries:[entry]}};
+  if(v)return {societyAccess:v.societyAccess,societyVoice:v.societyVoice,ecology:v.ecology?{...v.ecology}:undefined,race:v.race,kingdom:v.kingdom,homeKingdom:s.homeKingdom??v.kingdom,rank:v.rank,age:v.age,seed:v.seed,look:{...v.look},job:v.job,dead:v.dead,pet:v.pet?{...v.pet}:null,calendar:{quarter:v.quarter,pending:false},household:{members:v.cast.map(m=>({...m,look:{...m.look}}))},lifeChoices:{inventory:v.items.slice(),hobby:v.hobby},diary:{entries:[entry]}};
   // Older records retain their place, but cannot reconstruct who was present.
   return {race:s.race,kingdom:entry.realm,homeKingdom:s.homeKingdom??entry.realm,rank:s.rank,age:e.age||0,seed:s.seed,look:{...s.look},job:null,dead:false,pet:null,sceneOnly:true,calendar:{quarter:Math.max(0,Math.min(3,Math.floor(((e.month||1)-1)/3))),pending:false},household:{members:[]},lifeChoices:{inventory:[],hobby:null},diary:{entries:[entry]}};
  }

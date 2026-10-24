@@ -136,7 +136,7 @@ const Wardrobe=(()=>{
   if(v.accessory===22){box(c,6,17,12,1,dye.accent);box(c,7,18,10,1,dye.leather);box(c,9,19,6,1,dye.accent)}
   if(v.accessory===23){box(c,17,20,5,10,dye.leather);box(c,18,21,3,8,base);box(c,18,22,3,1,dye.accent);box(c,18,28,3,1,dye.accent)}
   if(typeof Workwear!=='undefined')Workwear.uniform(c,s,m,age);
-  if((s.rank||0)>=5&&age>=18){box(c,5,17,1,9,trim);box(c,18,17,1,9,trim);box(c,12,20,2,2,'#d1b16d')}
+  if((s.race===0?(s.rank||0)>=5:typeof SpeciesSociety!=='undefined'&&(s.societyAccess??SpeciesSociety.metrics(s).access)>=70)&&age>=18){box(c,5,17,1,9,trim);box(c,18,17,1,9,trim);box(c,12,20,2,2,'#d1b16d')}
  }
  // Rear layers are drawn before the body, preserving arms, tails and wing outlines.
  function back(c,s,m,age){if(age<4)return;const v=style(s,m),{shirt:base,trim,shade:dark,cape:col}=outfit(s,m,age);
