@@ -96,7 +96,7 @@ function quarter(s){const l=ensure(s),q=s.calendar?.count??0;if(s.dead||l.lastQu
  b.cash=round(clamp(b.cash+profit,0,1e7));b.lastRevenue=revenue;b.lastCosts=round(costs+incident);b.lastProfit=profit;b.totalProfit=round(clamp(b.totalProfit+profit,-1e7,1e7));b.lastDemand=round(demand);b.lastQuarter=q;
  b.loyalty=round(clamp(b.loyalty+(b.quality>=50?.3:.1)*k,0,100));
  b.reputation=round(clamp(b.reputation+(.1+(b.quality-40)/300)*k,0,100));
- const draw=profit>0?round(Math.min(b.cash,profit*.65)):0;if(draw>0){b.cash=round(Math.max(0,b.cash-draw));s.gold=clamp(s.gold+draw,0,1e9);b.ownerDraw=round(b.ownerDraw+draw)}
+ const draw=profit>0?round(Math.min(b.cash,profit*.65)):0;if(draw>0){b.cash=round(Math.max(0,b.cash-draw));const ownerTax=Math.round(draw*.18*100)/100;s.gold=clamp(s.gold+draw-ownerTax,0,1e9);if(typeof Economy!=='undefined'){Economy.record(s,'gross',draw);Economy.record(s,'tax',ownerTax)}b.ownerDraw=round(b.ownerDraw+draw)}
  if(b.cash<=.01&&profit<0)b.badQuarters=round(b.badQuarters+k/4);else b.badQuarters=0;
  if(b.badQuarters>=1){history(s,def.name+'หยุดกิจการหลังเงินหมุนเวียนไม่พอจ่ายต้นทุน');l.business=null;s.joy=Math.max(0,s.joy-5);return {title:'วันที่ต้องปิดร้านชั่วคราว',tone:'loss',kind:'work',key:'business-closed-'+def.id+'-'+q,paragraphs:['เงินหมุนเวียนของ'+def.name+'ไม่พอจ่ายต้นทุนต่อ คุณชำระสิ่งที่จ่ายได้แล้วแจ้งลูกค้าและผู้ช่วยว่าจะหยุดรับงานใหม่','คุณเก็บบัญชีครั้งนี้ไว้ดูว่าเงินหมดที่ส่วนใด การเปิดร้านอีกครั้งจะต้องใช้เงินทุนใหม่และแผนที่ต่างจากเดิม']}}
  if(entry)return entry;

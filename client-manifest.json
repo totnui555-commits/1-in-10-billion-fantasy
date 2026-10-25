@@ -61,6 +61,11 @@
     "society-controls.js",
     "life-tiers.js",
     "tier-controls.js",
+    "housing.js",
+    "adventures.js",
+    "housing-controls.js",
+    "adventure-controls.js",
+    "life-economy-controls.js",
     "app.js"
   ],
   "styles": [
@@ -79,6 +84,7 @@
     "belief.css",
     "hazards.css",
     "society.css",
-    "tiers.css"
+    "tiers.css",
+    "adventures.css"
   ]
 }
