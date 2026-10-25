@@ -73,6 +73,7 @@
     "realm-data.js",
     "realm-life.js",
     "realm-controls.js",
+    "dynasty-life.js",
     "app.js"
   ],
   "styles": [

@@ -5,6 +5,17 @@ import json,random,math
 from shapely.geometry import Polygon,Point
 r=Path(__file__).resolve().parents[1];defs=json.loads((r/'content/realms-expansion.json').read_text());random.seed(33052)
 coasts=[Polygon([(55,160),(160,65),(370,110),(470,50),(720,140),(850,100),(900,250),(800,420),(900,610),(810,800),(880,980),(770,1160),(820,1410),(700,1630),(520,1690),(340,1580),(150,1650),(60,1460),(110,1240),(35,1050),(80,850),(25,650),(110,440),(40,310)]),Polygon([(1010,150),(1180,70),(1360,90),(1470,40),(1690,110),(1760,300),(1690,470),(1760,650),(1620,850),(1690,1010),(1430,1060),(1250,980),(1110,1040),(1000,850),(1060,650),(950,470),(1020,310)])]
+# Subdivide shore segments into headlands and inlets before partitioning countries.
+# Deterministic detail belongs to the coastline, so neighboring borders still meet.
+def erode(coast):
+ coords=list(coast.exterior.coords);out=[]
+ for a,b in zip(coords,coords[1:]):
+  dx,dy=b[0]-a[0],b[1]-a[1];length=math.hypot(dx,dy);n=max(2,int(length/18))
+  for j in range(n):
+   t=j/n;wave=math.sin(math.pi*t)*random.uniform(-16,16)
+   out.append((a[0]+dx*t-dy/length*wave,a[1]+dy*t+dx/length*wave))
+ return Polygon(out).buffer(0)
+coasts=[erode(p) for p in coasts]
 points=[];groups=[]
 for i in range(36):
  if i<18:row,col=divmod(i,3);x=180+col*250;y=190+row*260;group=0
@@ -15,7 +26,7 @@ for i in range(36):
   center=coasts[group].representative_point()
   while not coasts[group].contains(Point(x,y)):x=(x+center.x)/2;y=(y+center.y)/2
  else:
-  coast=[(x+math.cos(j*math.pi/6)*(100+random.randint(-15,12)),y+math.sin(j*math.pi/6)*(100+random.randint(-15,12))) for j in range(12)];coasts.append(Polygon(coast))
+  coast=[(x+math.cos(j*math.pi/16)*(100+random.randint(-18,16)),y+math.sin(j*math.pi/16)*(100+random.randint(-18,16))) for j in range(32)];coasts.append(Polygon(coast))
  points.append([round(x),round(y)]);groups.append(group)
 def clip(poly,a,b):
  # Convex Voronoi half-plane: closer to a than to b.
