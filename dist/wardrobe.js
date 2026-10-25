@@ -152,7 +152,7 @@ const Wardrobe=(()=>{
   if(v.mantle===10){box(c,0,18,6,12,base);box(c,20,18,5,12,base);box(c,1,27,3,4,trim);box(c,22,27,2,4,trim)}
   if(v.mantle===11){box(c,0,17,7,14,col);box(c,19,17,6,14,col);box(c,0,17,2,14,trim);box(c,23,17,2,14,trim)}
  }
- function hair(c,s,m,age,skin,posture=0){const v=style(s,m),col=age>=60?'#c4c1b2':hairColors[v.hairColor],b=(x,y,w,h,k=col)=>box(c,x+posture,y,w,h,k);b(3,2,17,10,skin);b(4,2,15,4);const h=v.hair;
+ function hair(c,s,m,age,skin,posture=0){const v=style(s,m),col=age>=75?'#ddd9ca':age>=60?'#c4c1b2':hairColors[v.hairColor],b=(x,y,w,h,k=col)=>box(c,x+posture,y,w,h,k);b(3,2,17,10,skin);b(4,2,15,4);const h=v.hair;
   if(h===0){b(4,5,3,7);b(17,5,3,6)}
   if(h===1){b(3,1,17,4);b(3,4,3,10);b(17,4,3,10)}
   if(h===2){b(3,0,18,5);b(5,4,3,4);b(9,4,3,2);b(18,4,2,5)}
@@ -185,6 +185,7 @@ const Wardrobe=(()=>{
   if(h===29){b(4,0,15,4);b(3,4,3,9);b(18,4,3,9);b(2,12,4,3);b(18,12,4,3);b(2,16,3,3);b(19,16,3,3)}
   if(h===30){b(3,0,18,5);b(3,5,4,5);b(18,5,3,5);b(5,-2,4,3);b(15,-2,4,3);b(1,5,3,4);b(21,5,3,4)}
   if(h===31){b(3,1,18,4);b(3,5,3,10);b(18,5,3,10);b(1,14,5,5);b(19,14,5,5);b(2,18,4,2,colors(v)[1]);b(20,18,4,2,colors(v)[1])}
+  if(age>=50){b(8,8,3,1,'#9c8877');b(15,8,2,1,'#9c8877')}if(age>=75){b(6,2,3,1,skin);b(13,2,3,1,skin)}
   if(age>=40&&age<60){b(4,5,2,4,'#acaaa0');b(18,5,2,4,'#acaaa0')}
  }
  function headwear(c,s,m,age,race){if(age<4||![0,1,2,3,4,11,12,26,27].includes(race))return;const v=style(s,m),{shirt:base,trim,shade:dark}=outfit(s,m,age),r=role(s,m,age),hatDefault=age<12?[0,1,2,5,6,8,11,15][v.hat%8]:r==='farmer'?[1,8,12,15][v.hat%4]:r==='guard'?[3,9,13,17][v.hat%4]:r==='mage'?[4,10,14,16][v.hat%4]:v.hat,hat=typeof Workwear==='undefined'?hatDefault:Workwear.hats(s,m,age,hatDefault);
@@ -207,6 +208,7 @@ const Wardrobe=(()=>{
  }
  // Bodies without clothing retain their anatomy: markings, not human suits or hats.
  function native(c,s,m,age,race){if(age<1)return;const v=style(s,m),p=typeof Ecology!=='undefined'?Ecology.profile(race):null,[base,trim,dark]=colors(v),type=p?.body||'hands';
+  if(age>=40&&race!==0){const faded=age>=60?'#c4c7ae':'#aab39a';if(['seed','spore','bud'].includes(p?.origin)){box(c,4,6,3,2,faded);box(c,19,10,2,2,faded);if(age>=60)box(c,10,3,4,1,'#a59272')}else if(!Ecology.organic({race})){box(c,10,11,1,5,faded);box(c,11,15,3,1,faded);if(age>=60)box(c,17,22,1,5,'#718574')}else{const x=type==='quad'?27:8;box(c,x,8,3,1,faded);if(age>=60){box(c,x-1,11,2,1,faded);box(c,15,26,3,1,faded)}}}
   if(p?.civic&&type==='hands'){box(c,6,18,13,3,base);box(c,8,21,2,7,trim);box(c,16,23,3,4,dark);return}
   const positions=type==='roots'?[[5,12],[22,5],[14,29]]:type==='gel'?[[5,18],[18,26],[10,30]]:type==='wings'?[[1,17],[23,20],[12,29]]:['quad','fins'].includes(type)?[[1,22],[9,24],[16,23]]:[[8,18],[17,24],[10,29]];
   positions.forEach(([x,y],i)=>{const n=hash(v.key+i*97),a=i%2?base:trim,mark=v.mark%8;

@@ -66,6 +66,8 @@
     "housing-controls.js",
     "adventure-controls.js",
     "life-economy-controls.js",
+    "life-reel.js",
+    "reel-controls.js",
     "app.js"
   ],
   "styles": [
@@ -85,6 +87,7 @@
     "hazards.css",
     "society.css",
     "tiers.css",
-    "adventures.css"
+    "adventures.css",
+    "reel.css"
   ]
 }

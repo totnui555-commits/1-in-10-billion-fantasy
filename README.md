@@ -30,8 +30,17 @@ This repository starts from the published v19 game. Hosting account configuratio
 
 Original Thai-language fantasy life simulator. Vanilla HTML/CSS/JavaScript with runtime pixel animation and no gameplay API. Run `python scripts/build-client.py` after source changes, then serve `dist/` on a static web server or CDN. No external game assets or API keys are required.
 
-## Current gameplay (v29)
+## Current gameplay (v30)
 72 playable races, 16 kingdoms, 40 human clans, 26 nonhuman society models, 123 professions, 15 businesses, 36 companion species, 45 purchasable props, 12 long-term projects, 1,247 canonical choice events and 768 pixel scene configurations. Named households, species-specific growth, annual focus, local social standing, cross-species relations, death/rebirth and a searchable illustrated diary persist in browser-local saves. Content is authored and finite; rare contexts and long lives can still repeat.
+
+## Lifetime slideshow and visible aging (v30)
+Death opens an automatic, replayable life slideshow. It uses actual birth/growth records, recorded choices, important people and the actual death cause. Previous/next, a reading pause, the retained decision list and return-to-card controls are available. Autoplay waits nine seconds per slide, stops on the final page and respects reduced-motion preferences. The slideshow never starts a new life or changes gameplay. It is also available from archived farewell cards.
+
+A bounded optional `lifeReel` ledger retains up to 20 whitelisted visual snapshots separately from the rolling diary, preserving birth and distinct recorded growth stages. Playback selects up to 16 chronological highlights plus people and farewell pages. Older saves use remaining diary/legacy records and clearly label scenery-only illustrations when no historical appearance exists. Short lives never gain invented adult or elderly chapters. Retained decision records include recurring events at different times; older rolled-off choices cannot be recreated.
+
+Pixel growth now changes size progressively through childhood and adolescence, then posture, pace, hair and surface detail with age. Native bodies receive scale, core-repair, root/spore or other surface marks rather than human clothing. Existing species-specific chronological maturity remains authoritative. Aquatic, plant and nonorganic farewell scenes use suitable light, seed or core motifs. Existing identity, profession clothing and historical snapshot ages remain consistent. No generated background images were added.
+
+Validation: `node scripts/check-life-reel.cjs` checks diary rollover, six recorded growth stages, actual choices/cause, read-only playback, short lives, old saves and malformed snapshots. The wardrobe suite still covers all 72 species at seven ages, identity and historical consistency. Chromium verified automatic death playback, timed advance, pause, navigation, decision-list replay, dismissal, reload and 320/390/768/1366 layouts. A visual atlas of eight representative bodies at eight ages was inspected. Full-life regression passed 72 races, 6,101 choices, 45,823 quarters and 305 save round-trips.
 
 ## Annual economy, housing and adventuring (v29)
 Newborn personal wallets start at zero for all 72 species. Family/group capital remains separate. Named caregiver gifts deduct from the actual family fund; adult members of privileged houses or well-supported local groups can request a yearly capital share, with trust/obligation consequences. Ordinary households without reserves cannot provide the same help. Unplayed legacy newborn purses move into the family fund once; established older lives keep their cash and assets. Legacy pre-USD migration remains one-time only.
