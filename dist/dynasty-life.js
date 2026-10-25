@@ -2,7 +2,7 @@
 // State is derived from stable ancestry, actual kin and persisted decision flags.
 const DynastyLife=(()=>{
  const high=['crown','royal','sovereign','noble'],records=[];
- const house=s=>s.race===0&&!s.humanOrigin?.migrated?HumanOrigins.clan(s.humanOrigin?.clanId):null;
+ const house=s=>s.race===0&&!s.humanOrigin?.migrated?HumanOrigins.clan(s.humanOrigin?.clanId,s):null;
  const elite=s=>high.includes(house(s)?.type);
  const done=(s,id)=>!!s.flags[id];
  function status(s){const h=house(s);if(!h||!elite(s))return null;const elders=FamilyWorld.list(s).filter(m=>m.alive&&m.id.startsWith('sibling')&&m.age>s.age),order=1+elders.length+(h.type==='royal'?2:0);return {house:h,order,withdrawn:done(s,'dyn34-renounced'),confirmed:done(s,'dyn34-confirmed'),governing:done(s,'dyn34-governing'),seat:h.type==='crown'?'บัลลังก์':h.type==='sovereign'?'สภามหาตระกูล':'ตำแหน่งประมุขตระกูล'};}

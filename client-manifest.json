@@ -75,6 +75,8 @@
     "realm-controls.js",
     "dynasty-life.js",
     "atlas-geography.js",
+    "history-data.js",
+    "world-history.js",
     "app.js"
   ],
   "styles": [
