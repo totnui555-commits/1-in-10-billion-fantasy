@@ -10,6 +10,6 @@ const SpendingUI=(()=>{
   $('#investmentForm').onsubmit=e=>{e.preventDefault();transfer('deposit')};$('#withdrawInvestment').onclick=()=>transfer('withdraw');$('#openEconomyFromSpend').onclick=EpochUI.money;$('#spendShop').onclick=()=>LifeUI.shop();$('#spendPets').onclick=()=>LifeUI.companions();
   if($('#sellHouse'))$('#sellHouse').onclick=()=>{modal(`<section class="spending-dialog"><h2>ขายบ้านหลังนี้?</h2><p>รับคืน ${number(report.homeValue)} ทอง และกลับมาจ่ายค่าที่พักตามปกติ</p><div class="spending-links"><button id="keepHouse" class="secondary">เก็บบ้านไว้</button><button id="confirmSellHouse" class="secondary">ขายบ้าน</button></div></section>`);$('#keepHouse').onclick=open;$('#confirmSellHouse').onclick=()=>{if(LifeSpending.sellHouse(state))refresh('ขายบ้านแล้ว');else open()}};
  }
- function bind(){if($('#spendMoney'))$('#spendMoney').onclick=open}
+ function bind(){if($('#spendMoney'))$('#spendMoney').onclick=()=>RaceDrives.cashless(state)?BeliefUI.ways():open()}
  return {open,bind};
 })();

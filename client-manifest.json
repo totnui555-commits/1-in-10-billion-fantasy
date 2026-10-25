@@ -59,6 +59,8 @@
     "hazard-controls.js",
     "species-society.js",
     "society-controls.js",
+    "life-tiers.js",
+    "tier-controls.js",
     "app.js"
   ],
   "styles": [
@@ -76,6 +78,7 @@
     "epoch.css",
     "belief.css",
     "hazards.css",
-    "society.css"
+    "society.css",
+    "tiers.css"
   ]
 }
