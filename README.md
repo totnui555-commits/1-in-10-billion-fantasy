@@ -339,3 +339,14 @@ Localization is presentation-only: IDs, probabilities, eligibility rules, names 
 Translation sources live in `locales/en-source.json`, editorial corrections in `locales/en-overrides.json`, and stable name spellings in `locales/name-romanization.json`. Run `python scripts/build-locale.py` followed by `python scripts/build-client.py` after edits; both builds work without a translation service.
 
 Validation: `node scripts/check-language.cjs` checks source phrase coverage, all 72 species’ birth stories and generated names, Thai restoration, save invariance and English search. `scripts/check-language-browser.cjs` exercises actual English/Thai welcome and birth flows, 12 contextual species, money receipts, career/journal search, reload, four viewport widths and the death slideshow. Existing economy, adventure, story-context and life-reel checks also pass.
+
+
+### v33 — 52 realms and 200 human houses
+
+Expands the original 16 realms to 52 and the original 40 human clans to 200, keeping their existing IDs. Each new realm has bilingual descriptions of its government, terrain, resource economy, customs and local tensions, four local human houses, and a separate ecological pressure for native creatures. Human cultures now cover all 52 realms. Birthplaces follow species habitats; human birth probability remains 40%.
+
+There are 376 additional contextual decision events with 1,128 branches. Eligibility checks age, location, clan and native/civic context. Choices spend or earn actual money, consume native resources or change relationships and stats; they do not grant passive income. Regional cost indices, occupational advantages, business demand and world-crisis exposure differ. Travel quotes use connected map routes. The expanded atlas adds two continental regions and an archipelago with country borders, rivers and ferry connections. Its 48 existing scene layouts support 52 realm styles (2,496 configurations, not separately drawn scenes).
+
+Source content lives in `content/realms-expansion.json`. Rebuild map/data with `python scripts/build-realms.py` (build-only dependencies in `scripts/requirements-atlas.txt`), then run the locale and client builders. Gameplay remains static and browser-local. No shared-world server or concurrency benchmark is added.
+
+Validation: `node scripts/check-realms.cjs` samples 5,000 births, verifies all 52 birth destinations, habitat compatibility, zero newborn wallets, connected routes and all 1,128 new choice branches with actual financial/resource effects and save roundtrips. Chromium checks new realm dossiers, local decisions, 200-house catalogue, 52 travel destinations, English localization and four viewport widths. Existing language, economy/adventure, story-context and life-reel regressions pass.

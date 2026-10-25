@@ -14,7 +14,7 @@ const WorldTimeline=(()=>{
  ['ฤดูผลผลิตล้น','พืชและแหล่งอาหารในถิ่นฟื้นตัว ตลาดลดราคา',[0,1,11,14],-.12,.05],
  ['ไข้ละอองเวท','ผู้รักษาเพิ่มเวรและขอให้ชุมชนเตรียมเขตพัก',[0,2,5,12],.09,-.05],
  ['คาราวานหายไป','เส้นทางใหญ่หยุดส่งของ พ่อค้ารายเล็กต้องหาแหล่งใหม่',[7,9,13,14],.17,-.09],
- ['ทางร่วมสิบหกอาณาจักร','หลายเมืองเปิดเส้นทางแลกสินค้าและข่าวสาร',[4,5,10,12],-.06,.1],
+ ['ทางร่วมระหว่างอาณาจักร','หลายเมืองเปิดเส้นทางแลกสินค้าและข่าวสาร',[4,5,10,12],-.06,.1],
  ['คืนสัตว์อพยพ','ฝูงสัตว์เปลี่ยนทางผ่าน พื้นที่เพาะเลี้ยงและแหล่งพักต้องปรับ',[1,8,11,14],.07,-.02],
  ['ดอกไม้โลกผลิบาน','พลังจากรากไม้ช่วยคืนความชื้นและเปิดวงเทศกาล',[1,5,11],-.05,.04],
  ['แร่ร้องเพลงตื่นขึ้น','แร่เปลี่ยนความถี่ ช่างหยุดเครื่องก่อนปรับแกนรับแรง',[3,8,12,13],.08,.08],
@@ -27,8 +27,8 @@ const WorldTimeline=(()=>{
  function eligibleOffice(s,id){const o=offices.find(o=>o.id===id);return !!o&&o.test(s)&&Engine.biological(s)>=25&&s.fame>=55&&Math.max(s.magic,s.power)>=60&&s.bond>=40&&!ensure(s).office}
  function mode(s,a){return s.worldTimeline?.overrides.find(x=>x.id===a.id&&x.era===era(s))?.mode||'attack'}
  function active(s){const cy=cycle(s);return arcs.filter(a=>cy>=a.year-1&&cy<a.year+a.duration).map(a=>({...a,phase:cy===a.year-1?'warning':'active',mode:mode(s,a)}))}
- function impact(s,realm=s.kingdom){const y=year(s),a=annual[hash(y,s.worldTimeline?.seed??worldSeed)%annual.length],local=a[2].includes(realm),age=Engine.biological(s),role=s.job===null?'':JOBS[s.job][0],adventure=/ผจญภัย|ทหาร|อัศวิน|นักรบ|ยาม|พิทักษ์|สำรวจ|ล่า/.test(role);let severity=0,price=local?a[3]:a[3]*.2,jobs=local?a[4]:a[4]*.2;const threats=[];
-  for(const t of active(s)){const proximity=t.targets.indexOf(realm),exposure=proximity<0?.12:[1,.9,.75,.6,.45][proximity],factor=t.phase==='warning'?.25:t.mode==='peace'?.06:t.mode==='delay'?.3:1;let harm=t.severity*exposure*factor;if(t.mode==='attack'&&t.phase==='active'&&adventure&&age>=18)harm*=1.2;if(t.id==='lich'&&[14,31,42,60,67].includes(s.race))harm*=.6;if(t.id==='tide'&&Ecology.profile(s).water)harm*=.7;if(t.id==='demon'&&Species.isDemon(s.race))harm*=.8;
+ function impact(s,realm=s.kingdom){const y=year(s),a=annual[hash(y,s.worldTimeline?.seed??worldSeed)%annual.length],local=a[2].includes(realm)||(typeof RealmLife!=='undefined'&&RealmLife.annualLocal(a[0],realm)),age=Engine.biological(s),role=s.job===null?'':JOBS[s.job][0],adventure=/ผจญภัย|ทหาร|อัศวิน|นักรบ|ยาม|พิทักษ์|สำรวจ|ล่า/.test(role);let severity=0,price=local?a[3]:a[3]*.2,jobs=local?a[4]:a[4]*.2;const threats=[];
+  for(const t of active(s)){const proximity=t.targets.indexOf(realm),exposure=(typeof RealmLife!=='undefined'?RealmLife.exposure(t.id,realm):null)??(proximity<0?.12:[1,.9,.75,.6,.45][proximity]),factor=t.phase==='warning'?.25:t.mode==='peace'?.06:t.mode==='delay'?.3:1;let harm=t.severity*exposure*factor;if(t.mode==='attack'&&t.phase==='active'&&adventure&&age>=18)harm*=1.2;if(t.id==='lich'&&[14,31,42,60,67].includes(s.race))harm*=.6;if(t.id==='tide'&&Ecology.profile(s).water)harm*=.7;if(t.id==='demon'&&Species.isDemon(s.race))harm*=.8;
    if(realm===s.kingdom&&s.worldTimeline?.response==='shelter')harm*=.7;if(realm===s.kingdom&&s.worldTimeline?.response==='defend')harm*=.8;if(['forge','human','dragon'].includes(s.worldTimeline?.office)&&s.worldTimeline.response==='summon')harm*=.45;
    if(t.phase==='active'&&cycle(s)>t.year)harm*=.8;severity+=harm;price+=t.price*exposure*factor;jobs+=t.jobs*exposure*factor;threats.push({...t,exposure,harm})}
   if(typeof FaithWorld!=='undefined'){const influence=FaithWorld.impact(s,realm);severity+=influence.severity;jobs+=influence.jobs;price+=Math.max(0,influence.severity)*.2-influence.jobs*.1}

@@ -70,6 +70,9 @@
     "life-economy-controls.js",
     "life-reel.js",
     "reel-controls.js",
+    "realm-data.js",
+    "realm-life.js",
+    "realm-controls.js",
     "app.js"
   ],
   "styles": [
@@ -91,6 +94,7 @@
     "tiers.css",
     "adventures.css",
     "reel.css",
-    "language.css"
+    "language.css",
+    "realms.css"
   ]
 }
