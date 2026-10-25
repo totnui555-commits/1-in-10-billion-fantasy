@@ -74,6 +74,7 @@
     "realm-life.js",
     "realm-controls.js",
     "dynasty-life.js",
+    "atlas-geography.js",
     "app.js"
   ],
   "styles": [
