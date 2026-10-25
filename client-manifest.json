@@ -1,5 +1,7 @@
 {
   "scripts": [
+    "locale-en.js",
+    "language.js",
     "data.js",
     "names.js",
     "family-world.js",
@@ -88,6 +90,7 @@
     "society.css",
     "tiers.css",
     "adventures.css",
-    "reel.css"
+    "reel.css",
+    "language.css"
   ]
 }

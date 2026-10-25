@@ -328,3 +328,14 @@ Validation: `node scripts/check-faith-drives.cjs` checks216 initial ambition bra
 ### v31 — readable history and annual discretionary budgets
 
 The main life feed starts with 30 records and loads 30 older entries in place, up to the retained diary limit of 360. Automatic renders preserve the visible record position. Spending packages now price annual extras separately from basic living costs, display cash committed and reserve coverage before purchase, and show actual clamped stat changes and cash after purchase. Health plans cost 2,400, family meals 1,560, courses 4,800 and hobby budgets 1,800 gold per year. Purchases use calendar-year guards across species; full stats yield no hidden excess benefit. Legacy wallets and historical receipts are preserved.
+
+
+### v32 — Thai / English language selection
+
+The header language selector switches the full displayed experience between Thai and English without rerolling or translating saved simulation data. The choice persists on the device; `?lang=en` and `?lang=th` are shareable entry points. With no preference, the browser language supplies the initial choice. A local catalogue contains over 12,000 authored phrases, including UI, species, professions, decisions, retained journals, world news, money, relationships and the farewell slideshow. English names use a stable local romanization lexicon. Canvas labels, shared life summaries and exported life cards use the selected language. Career and journal searches support English.
+
+Localization is presentation-only: IDs, probabilities, eligibility rules, names stored in saves, wallet values, outcomes and RNG are unchanged. Existing saves remain compatible. No player text, save or translation request is sent to an external service during play. The initial English draft was machine-assisted, with 454 editorial overrides and manually standardized names for 72 species, 16 realms and 40 human clans; prose assembled from fragments can still need editorial refinement. User-entered text outside the catalogue may retain its original language.
+
+Translation sources live in `locales/en-source.json`, editorial corrections in `locales/en-overrides.json`, and stable name spellings in `locales/name-romanization.json`. Run `python scripts/build-locale.py` followed by `python scripts/build-client.py` after edits; both builds work without a translation service.
+
+Validation: `node scripts/check-language.cjs` checks source phrase coverage, all 72 species’ birth stories and generated names, Thai restoration, save invariance and English search. `scripts/check-language-browser.cjs` exercises actual English/Thai welcome and birth flows, 12 contextual species, money receipts, career/journal search, reload, four viewport widths and the death slideshow. Existing economy, adventure, story-context and life-reel checks also pass.

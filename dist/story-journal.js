@@ -11,7 +11,7 @@ const StoryJournal=(()=>{
  const kindLabel=k=>kinds[category(k)]||'ช่วงหนึ่งของชีวิต';
  const orderPages=(entries,ascending=false)=>entries.slice().sort((a,b)=>{const difference=(Number(a.age)||0)-(Number(b.age)||0)||((Number(a.month)||1)-(Number(b.month)||1))||((Number(a.id)||0)-(Number(b.id)||0));return ascending?difference:-difference});
  const hasImage=e=>typeof VisualMemory!=='undefined'&&VisualMemory.has(e);
- const textOf=e=>[e.title,e.where,e.phase,e.season,...(Array.isArray(e.paragraphs)?e.paragraphs:[])].join(' ').normalize('NFC').toLocaleLowerCase('th');
+ const textOf=e=>GameLanguage.text([e.title,e.where,e.phase,e.season,...(Array.isArray(e.paragraphs)?e.paragraphs:[])].join(' ')).normalize('NFC').toLocaleLowerCase(GameLanguage.locale);
  const date=e=>(e.worldYear?'ปี '+e.worldYear+' · ':'')+'อายุ '+e.age+' ปี · เดือน '+(e.month||1);
  function resetForLife(){if(view.seed!==state.seed)view={seed:state.seed,query:'',year:'all',kind:'all',order:'newest',page:0}}
  function filtered(){const term=view.query.trim().normalize('NFC').toLocaleLowerCase('th');return orderPages(pages().filter(e=>(view.year==='all'||String(e.age)===view.year)&&(view.kind==='all'||category(e.kind)===view.kind)&&(!term||textOf(e).includes(term))),view.order==='oldest')}
