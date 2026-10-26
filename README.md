@@ -398,3 +398,10 @@ Local-place labels appear when zoomed in and follow the name visibility toggle. 
 Rebuild the base atlas with `python scripts/build-world-atlas.py`, then detail with `python scripts/build-atlas-detail.py`, followed by locale/client builds. Build-only dependencies are listed in `scripts/requirements-atlas.txt`. `content/atlas-detail.json` stores derived facts and `dist/atlas-detail.js` supplies the UI.
 
 Validation: `node scripts/check-atlas-detail.cjs` verifies unchanged realm geometry, all connected navigation routes, downstream receivers and local metadata. `scripts/check-atlas-detail-browser.cjs` checks 52 interactive regions, zoom-dependent labels, settlement and realm dossiers, keyboard-ready markers, English translation and four viewport widths. Existing realm and localization regressions pass.
+
+
+### v39 — contextual pixel motion
+
+The live life scene adds deterministic pixel effects by setting: moving leaves and motes, water highlights, forge embers, magical sparks, domestic steam and windborne particles. Humanoid characters use a two-step gait while travelling; infant and small-child gait remains unchanged. Existing creature-specific rendering is preserved. Motion is presentation-only and does not advance time, change randomness or modify saves. The existing animation control, reduced-motion preference, viewport visibility and paused-clock behavior continue to apply.
+
+Validation: `scripts/check-pixel-motion.cjs` exercises seven environments, compares animated and repeated still frames, checks state immutability, reduced motion and toggle persistence in Chromium. Era and atlas regressions pass.

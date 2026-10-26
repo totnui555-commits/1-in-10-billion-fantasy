@@ -1,6 +1,6 @@
 'use strict';
 const Illustration=(()=>{
-let sceneTime=0;
+let sceneTime=0,actorWalking=false;
 const P=[
  {sky:'#d1a56e',far:'#9c915d',near:'#778457',ground:'#b08a55',roof:'#736546'},
  {sky:'#8ba68e',far:'#627c65',near:'#405f4d',ground:'#6e845e',roof:'#514e3f'},
@@ -167,7 +167,7 @@ function drawPerson(c,x,y,scale,s,age=30,member=null){
  }else{
   Wardrobe.back(c,s,member,age);
   const legTop=small?27:29;
-  rect(c,4,legTop,5,37-legTop,'#343b37');rect(c,15,legTop,5,37-legTop,'#343b37');
+  const stride=actorWalking&&!small?(Math.floor(sceneTime*5)%4<2?2:-2):0;rect(c,4+stride,legTop,5,37-legTop,'#343b37');rect(c,15-stride,legTop,5,37-legTop,'#343b37');
   poly(c,[[3,17],[7,14],[16,14],[21,18],[23,legTop],[19,31],[5,31],[1,27]],coat);
   rect(c,8,18,5,small?5:9,'#d6cb9f');rect(c,3,26,18,2,'#384840');rect(c,10,19,2,4,'#8b744c');
  }
@@ -432,11 +432,23 @@ function purchasedDecor(c,s,scene,t){
  selected.forEach((item,i)=>{if(item.ecologyHabitats){const x=18+i*49;rect(c,x,170,29,3,'#7c8d6b');for(let j=0;j<4;j++)poly(c,[[x+j*7,170],[x+3+j*7,158-j%2*5],[x+7+j*7,170]],['#b5c5a0','#9bbcb1','#b9b087','#9fabbf'][i%4]);return}furnishings(c,item.prop||item.id,14+i*44,172,.78,t,'#9b865f')});
 }
 
+// Small, scene-specific pixel motions. Coordinates are deterministic and never
+// affect game state; a stopped clock simply renders the same frame again.
+function sceneMotionLayer(c,s,scene,t){
+ const env=scene.environment,seed=s.seed>>>0,phase=Math.floor(t*8),px=(n,m)=>((n%m)+m)%m;
+ if(['forest','tree-village','garden','spirit-grove'].includes(env)){for(let i=0;i<12;i++){const x=px(seed+i*67+phase*2,480),y=42+px(i*39+Math.floor(t*5)+(seed%31),102);rect(c,x,y,3,2,i%3?'#e5dca389':'#b5d5a18a')}}
+ if(['coast','ship','port','river','river-sanctuary','reef-home','open-ocean','waterfall'].includes(env)){for(let i=0;i<11;i++){const x=px(i*63+phase*3+(seed%47),510)-20,y=153+(i%4)*5;rect(c,x,y,20+i%3*5,2,'#d1e5d291')}}
+ if(['forge','mine','ember-nest','dragon-lair'].includes(env)){for(let i=0;i<10;i++){const x=30+px(i*41+seed+Math.floor(t*7),420),y=135-px(i*17+phase,95);rect(c,x,y,2+i%2,3,i%2?'#e2ac658c':'#f6d39aa6')}}
+ if(['alchemy','study','observatory','spirit-grove'].includes(env)){for(let i=0;i<8;i++){const x=35+px(seed+i*53,405),y=32+px(i*27-Math.floor(t*5),100);if((phase+i*3)%19<12){rect(c,x,y,3,3,'#e6dca3b8');rect(c,x+1,y-2,1,7,'#efe3b5a8')}}}
+ if(['kitchen','nursery','bedroom','workshop'].includes(env)){for(let i=0;i<5;i++){const y=95-px(phase+i*14,47),x=61+i*3+Math.round(Math.sin(t+i)*2);rect(c,x,y,3,3,'#ede3c47a')}}
+ if(['mountain','snowpass','border','ruins','desert'].includes(env)){for(let i=0;i<8;i++){const x=px(i*73+phase*4+seed,500)-10,y=78+(i%5)*13;rect(c,x,y,8+i%3*3,1,'#eee7cf88')}}
+}
 function drawScene(canvas,s,time=0){
  sceneTime=time;if(!canvas)return;const c=canvas.getContext('2d');if(!c)return;
  const moment=s.diary?.entries?.find(e=>!e.legacyAgeMismatch&&!e.legacyEcologyMismatch),f=feature(c,s,moment),scene=typeof SceneCatalog!=='undefined'?SceneCatalog.resolve(s):{environment:'garden',realm:s.kingdom,label:'สวน',interior:false,phase:moment?.phase||'',season:moment?.season||''};
  c.clearRect(0,0,canvas.width,canvas.height);c.save();c.imageSmoothingEnabled=false;c.scale(canvas.width/480,canvas.height/180);
  sceneBackground(c,s,scene,time);
+ sceneMotionLayer(c,s,scene,time);
  const deity=typeof FaithLore==='undefined'?null:FaithLore.find(g=>g.id===(s.calendar?.pending&&s.event?.faithOnly||moment?.deityMark));if(deity){const x=357,y=28+Math.floor(Math.sin(time*1.4)),colour=deity.colour;rect(c,x-12,y-12,58,47,'#e6e6d2b0');rect(c,x+15,y-6,3,31,colour);for(let i=0;i<4;i++){rect(c,x+i*9,y+7+i%2*3,5,3,colour);if(deity.sigil==='horn'||deity.sigil==='wing'){rect(c,x-4+i*3,y-5+i*4,4,7,colour);rect(c,x+34-i*3,y-5+i*4,4,7,colour)}if(deity.sigil==='root')rect(c,x+i*9,y+14,2,9,colour)}if(deity.sigil==='sun'||deity.sigil==='eye'){rect(c,x+5,y+1,25,16,colour);rect(c,x+13,y+5,9,8,'#e9e7d1')}rect(c,x-5,y+28,42,2,colour);}
  const threat=moment?.worldThreat;if(threat){const colours={demon:'#9e5e64',lich:'#8b94a6',grail:'#c2a768',tide:'#619fac'},colour=colours[threat]||'#8b846c';for(let i=0;i<5;i++){const x=325+i*24;rect(c,x,25+i%2*10,2,25,colour);poly(c,[[x+2,25+i%2*10],[x+14,29+i%2*10],[x+2,35+i%2*10]],colour)}if(threat==='tide')for(let i=0;i<8;i++)rect(c,(i*62+Math.floor(time*7))%480,165+i%2*6,37,2,'#b3d3c2');}
  if(!s.sceneOnly){const specificGuest=s.calendar?.pending&&typeof VisualMemory!=='undefined'?VisualMemory.actor(s,s.event?.context):moment?.guest||moment?.visual?.guest||null;const title=f.title||'',family=household(s).filter(m=>m.alive&&(!['river-sanctuary','reef-home','open-ocean'].includes(scene.environment)||Ecology.profile(m.race).water)),bio=Engine.biological(s),isHome=['nursery','bedroom','kitchen','study','music','garden',...(typeof Ecology!=='undefined'?Ecology.nativeScenes:[])].includes(scene.environment);let kin=[];
@@ -444,7 +456,7 @@ function drawScene(canvas,s,time=0){
  if(isHome&&specificGuest){const known=family.find(m=>m.name===specificGuest.name);if(known&&!kin.includes(known))kin=[kin[0],known].filter(Boolean)}kin.forEach((m,i)=>drawPerson(c,160+i*29,121,1.02,{...s,race:m.race,look:m.look},memberAge(s,m),m));
  if(bio>=4&&!s.dead&&(!['river-sanctuary','reef-home','open-ocean'].includes(scene.environment)||!specificGuest||Ecology.profile(specificGuest.race).water)&&(specificGuest&&!kin.some(m=>m.name===specificGuest.name)||!isHome&&['classroom','market','guild','barracks','council','clinic','border','workshop'].includes(scene.environment))){const guest={...s,job:null,race:specificGuest?.race??s.race,look:specificGuest?.look||{hair:(s.seed+12)%5,coat:(s.seed>>>6)%8,eyes:(s.seed>>>9)%3}};drawPerson(c,287,119,1.12,guest,specificGuest?.age??(scene.environment==='classroom'?Math.max(5,Math.min(17,bio)):30),family.find(m=>m.name===specificGuest?.name)||specificGuest||{name:'ผู้สัญจร',look:guest.look,race:guest.race})}
  const walking=!s.dead&&bio>=4&&['border','mountain','snowpass','forest','ruins'].includes(scene.environment),step=walking?Math.round(Math.sin(time*.75)*(bio>=60?7:13)):0;
- if(s.dead)drawRemembrance(c,219,139,1.3,s);else drawPerson(c,213+step,109,1.75,s,bio);
+ if(s.dead)drawRemembrance(c,219,139,1.3,s);else{actorWalking=walking;try{drawPerson(c,213+step,109,1.75,s,bio)}finally{actorWalking=false}}
  if(s.pet)drawPet(c,266+step,149,1.05,s.pet);
  purchasedDecor(c,s,scene,time);}
  if(['river-sanctuary','reef-home','open-ocean'].includes(scene.environment)){for(let i=0;i<12;i++)rect(c,(i*43+Math.floor(time*5))%480,157+i%3*6,24,1,'#a7d3bd25')}
