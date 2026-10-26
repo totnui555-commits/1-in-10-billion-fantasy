@@ -374,3 +374,14 @@ The welcome screen accepts integer birth years from 500 through 1000; 1000 is th
 An editorial pass replaces repeated human daily passages with concrete actions and more conversational Thai; new historical prose is authored in Thai. It does not claim a complete rewrite of every existing event. Build history data with `python scripts/build-history.py`, then locale and client builders. The economy ledger and adventurer diary validators now accept dates before 1000.
 
 Checks: `scripts/check-history.cjs` covers 1,200 births across six dates, founding/rise rules, newborn money, save roundtrips, milestone deduplication, hidden future news and date limits. `scripts/check-history-browser.cjs` exercises actual year-500 rolling, acceptance, resume, reaching year 535, English presentation and four viewport sizes. `scripts/check-historical-lifetimes.cjs` runs all 72 species in years 500, 820 and 1000 with periodic save reloads.
+
+
+### v37 — four playable birth eras
+
+The start screen now offers exactly 500, 800, 1000 and 1500 in a language-aware selector with a live era preview. Year 1000 remains the present; 1500 explicitly starts a life in the future. Existing saves born in other previously valid years continue unchanged. The engine accepts legacy integer dates through 1500 internally; the player-facing selector offers only the four requested dates.
+
+`content/birth-eras.json` describes childhood/education, livelihoods, social pressures and the experience of creatures living outside civic settlements. Historical milestones at 800 and 1500 bring the chronology to 28 entries. Twelve new contextual events (36 branches) cover childhood learning, adult obligations and native habitat pressures. Money, health, relationships and native resource costs are applied through existing simulation systems. Events follow the current historical era as a life advances, rather than staying locked to birth year.
+
+Early human learning uses home/community mentors and private tutors rather than an automatic modern-school scene. Community-school teaching becomes available from 800; rune railway and cloud-turbine service careers open from 1200. Existing employment is retained. Other skill, age and species requirements still apply. These are specific era gates and narrative changes, not a complete historical technology tree.
+
+Validation: `scripts/check-birth-eras.cjs` verifies all 72 species in four eras (288 births), all 36 new branches, actual cash/resource consequences, learning and career gates, hidden future chronology and save hydration. `scripts/check-birth-eras-browser.cjs` exercises all four previews in Thai/English, real roll/start/resume, a 1500 tuition payment and four viewport widths. History, language, story-context, economy/adventure and realm regressions pass.
