@@ -78,6 +78,7 @@
     "history-data.js",
     "world-history.js",
     "birth-eras.js",
+    "atlas-detail.js",
     "app.js"
   ],
   "styles": [

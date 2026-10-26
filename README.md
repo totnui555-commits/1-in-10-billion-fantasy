@@ -385,3 +385,16 @@ The start screen now offers exactly 500, 800, 1000 and 1500 in a language-aware 
 Early human learning uses home/community mentors and private tutors rather than an automatic modern-school scene. Community-school teaching becomes available from 800; rune railway and cloud-turbine service careers open from 1200. Existing employment is retained. Other skill, age and species requirements still apply. These are specific era gates and narrative changes, not a complete historical technology tree.
 
 Validation: `scripts/check-birth-eras.cjs` verifies all 72 species in four eras (288 births), all 36 new branches, actual cash/resource consequences, learning and career gates, hidden future chronology and save hydration. `scripts/check-birth-eras-browser.cjs` exercises all four previews in Thai/English, real roll/start/resume, a 1500 tuition payment and four viewport widths. History, language, story-context, economy/adventure and realm regressions pass.
+
+
+### v38 — terrain detail and local settlements
+
+The atlas keeps the exact 52 realm hit polygons, capital coordinates, navigation routes and travel pricing. A separate build derives a 10-unit terrain grid from the existing land, coast and ridge geometry. Priority-flood depression filling gives land cells downstream receivers; accumulated drainage produces 75 connected river segments instead of independent illustrative river strokes. Lakes are treated as drainage outlets. This is a stylized drainage model, not surveyed terrain or a full geological/climate simulation.
+
+The engraved map adds ridge contours, moist-valley trees, coastal scarps, cultivated strips near water and 136 local settlement/waystation markers along existing roads. Forty-three bridge symbols mark measured road/stream intersections. River drawing uses smoothed vector strokes; intersection metrics use their underlying polylines. River and terrain detail are baked into `world-atlas-v38.svg`; no scientific libraries run in the browser.
+
+Local-place labels appear when zoomed in and follow the name visibility toggle. Clicking or keyboard-activating a local marker opens its context and owning realm dossier. These settlements are atlas points of interest, not separate purchasable houses, travel destinations or simulations. Realm dossiers show the counted settlements, crossings and coastal/interior setting. Political boundaries are lighter so terrain remains visible.
+
+Rebuild the base atlas with `python scripts/build-world-atlas.py`, then detail with `python scripts/build-atlas-detail.py`, followed by locale/client builds. Build-only dependencies are listed in `scripts/requirements-atlas.txt`. `content/atlas-detail.json` stores derived facts and `dist/atlas-detail.js` supplies the UI.
+
+Validation: `node scripts/check-atlas-detail.cjs` verifies unchanged realm geometry, all connected navigation routes, downstream receivers and local metadata. `scripts/check-atlas-detail-browser.cjs` checks 52 interactive regions, zoom-dependent labels, settlement and realm dossiers, keyboard-ready markers, English translation and four viewport widths. Existing realm and localization regressions pass.
