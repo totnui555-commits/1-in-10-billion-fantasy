@@ -207,7 +207,7 @@ function drawPerson(c,x,y,scale,s,age=30,member=null){
  Wardrobe.headwear(c,s,member,age,race);
  if(Math.floor(sceneTime*8+(s.seed%29))%43===0){rect(c,7+posture,8,2,2,skin);rect(c,14+posture,8,2,2,skin);rect(c,7+posture,9,2,1,'#30352e');rect(c,14+posture,9,2,1,'#30352e')}
  if(!infant){
-  rect(c,1,23+(beat===2?1:0),3,4,skin);rect(c,21,23+(beat===0?1:0),3,4,skin);
+  const gesture=actorWalking?Math.floor(sceneTime*5)%4:beat;rect(c,1,23+(gesture===2?3:0),3,4,skin);rect(c,21,23+(gesture===0?3:0),3,4,skin);
   if(profile.stage==='child'){rect(c,18,18,6,10,'#ad8960');rect(c,19,19,1,7,'#d9c391')}
   if(profile.stage==='teen'){rect(c,2,16,2,12,'#c2b787');rect(c,17,25,6,5,'#a18459')}
   if((look.coat||0)%3===1)poly(c,[[3,18],[-2,29],[4,29],[8,22]],Wardrobe.outfit(s,member,age).cape);
@@ -436,10 +436,12 @@ function purchasedDecor(c,s,scene,t){
 // affect game state; a stopped clock simply renders the same frame again.
 function sceneMotionLayer(c,s,scene,t){
  const env=scene.environment,seed=s.seed>>>0,phase=Math.floor(t*8),px=(n,m)=>((n%m)+m)%m;
+ if(!scene.interior&&!['reef-home','open-ocean','river-sanctuary'].includes(env)){for(let i=0;i<3;i++){const x=px(i*190+Math.floor(t*4)+(seed%70),550)-40,y=17+i*9;rect(c,x,y,28+i*4,3,'#efe8d344');rect(c,x+7,y-3,14,3,'#efe8d344')}}
  if(['forest','tree-village','garden','spirit-grove'].includes(env)){for(let i=0;i<12;i++){const x=px(seed+i*67+phase*2,480),y=42+px(i*39+Math.floor(t*5)+(seed%31),102);rect(c,x,y,3,2,i%3?'#e5dca389':'#b5d5a18a')}}
  if(['coast','ship','port','river','river-sanctuary','reef-home','open-ocean','waterfall'].includes(env)){for(let i=0;i<11;i++){const x=px(i*63+phase*3+(seed%47),510)-20,y=153+(i%4)*5;rect(c,x,y,20+i%3*5,2,'#d1e5d291')}}
  if(['forge','mine','ember-nest','dragon-lair'].includes(env)){for(let i=0;i<10;i++){const x=30+px(i*41+seed+Math.floor(t*7),420),y=135-px(i*17+phase,95);rect(c,x,y,2+i%2,3,i%2?'#e2ac658c':'#f6d39aa6')}}
  if(['alchemy','study','observatory','spirit-grove'].includes(env)){for(let i=0;i<8;i++){const x=35+px(seed+i*53,405),y=32+px(i*27-Math.floor(t*5),100);if((phase+i*3)%19<12){rect(c,x,y,3,3,'#e6dca3b8');rect(c,x+1,y-2,1,7,'#efe3b5a8')}}}
+ if(['forest','garden','river','coast','farm'].includes(env)){for(let i=0;i<3;i++){const x=px(seed+i*171+Math.floor(t*(12+i*3)),540)-30,y=56+(i*23)%42;rect(c,x,y,5,1,'#3d524b99');rect(c,x+5,y+(phase+i)%2,4,1,'#3d524b99')}}
  if(['kitchen','nursery','bedroom','workshop'].includes(env)){for(let i=0;i<5;i++){const y=95-px(phase+i*14,47),x=61+i*3+Math.round(Math.sin(t+i)*2);rect(c,x,y,3,3,'#ede3c47a')}}
  if(['mountain','snowpass','border','ruins','desert'].includes(env)){for(let i=0;i<8;i++){const x=px(i*73+phase*4+seed,500)-10,y=78+(i%5)*13;rect(c,x,y,8+i%3*3,1,'#eee7cf88')}}
 }
@@ -453,11 +455,11 @@ function drawScene(canvas,s,time=0){
  const threat=moment?.worldThreat;if(threat){const colours={demon:'#9e5e64',lich:'#8b94a6',grail:'#c2a768',tide:'#619fac'},colour=colours[threat]||'#8b846c';for(let i=0;i<5;i++){const x=325+i*24;rect(c,x,25+i%2*10,2,25,colour);poly(c,[[x+2,25+i%2*10],[x+14,29+i%2*10],[x+2,35+i%2*10]],colour)}if(threat==='tide')for(let i=0;i<8;i++)rect(c,(i*62+Math.floor(time*7))%480,165+i%2*6,37,2,'#b3d3c2');}
  if(!s.sceneOnly){const specificGuest=s.calendar?.pending&&typeof VisualMemory!=='undefined'?VisualMemory.actor(s,s.event?.context):moment?.guest||moment?.visual?.guest||null;const title=f.title||'',family=household(s).filter(m=>m.alive&&(!['river-sanctuary','reef-home','open-ocean'].includes(scene.environment)||Ecology.profile(m.race).water)),bio=Engine.biological(s),isHome=['nursery','bedroom','kitchen','study','music','garden',...(typeof Ecology!=='undefined'?Ecology.nativeScenes:[])].includes(scene.environment);let kin=[];
  if(isHome){if(/รัก|คู่ชีวิต|ชา|แต่งงาน/.test(title))kin=[family.find(m=>m.id==='partner')||family[0]].filter(Boolean);else if(/ลูก|เด็กของคุณ/.test(title))kin=family.filter(m=>m.id.startsWith('child-')).slice(0,2);else kin=family.filter(m=>!m.id.startsWith('partner')&&!m.id.startsWith('child-')).slice(0,2)}
- if(isHome&&specificGuest){const known=family.find(m=>m.name===specificGuest.name);if(known&&!kin.includes(known))kin=[kin[0],known].filter(Boolean)}kin.forEach((m,i)=>drawPerson(c,160+i*29,121,1.02,{...s,race:m.race,look:m.look},memberAge(s,m),m));
- if(bio>=4&&!s.dead&&(!['river-sanctuary','reef-home','open-ocean'].includes(scene.environment)||!specificGuest||Ecology.profile(specificGuest.race).water)&&(specificGuest&&!kin.some(m=>m.name===specificGuest.name)||!isHome&&['classroom','market','guild','barracks','council','clinic','border','workshop'].includes(scene.environment))){const guest={...s,job:null,race:specificGuest?.race??s.race,look:specificGuest?.look||{hair:(s.seed+12)%5,coat:(s.seed>>>6)%8,eyes:(s.seed>>>9)%3}};drawPerson(c,287,119,1.12,guest,specificGuest?.age??(scene.environment==='classroom'?Math.max(5,Math.min(17,bio)):30),family.find(m=>m.name===specificGuest?.name)||specificGuest||{name:'ผู้สัญจร',look:guest.look,race:guest.race})}
- const walking=!s.dead&&bio>=4&&['border','mountain','snowpass','forest','ruins'].includes(scene.environment),step=walking?Math.round(Math.sin(time*.75)*(bio>=60?7:13)):0;
+ if(isHome&&specificGuest){const known=family.find(m=>m.name===specificGuest.name);if(known&&!kin.includes(known))kin=[kin[0],known].filter(Boolean)}kin.forEach((m,i)=>drawPerson(c,160+i*29+Math.round(Math.sin(time*.8+i*2)*3),121,1.02,{...s,race:m.race,look:m.look},memberAge(s,m),m));
+ if(bio>=4&&!s.dead&&(!['river-sanctuary','reef-home','open-ocean'].includes(scene.environment)||!specificGuest||Ecology.profile(specificGuest.race).water)&&(specificGuest&&!kin.some(m=>m.name===specificGuest.name)||!isHome&&['classroom','market','guild','barracks','council','clinic','border','workshop'].includes(scene.environment))){const guest={...s,job:null,race:specificGuest?.race??s.race,look:specificGuest?.look||{hair:(s.seed+12)%5,coat:(s.seed>>>6)%8,eyes:(s.seed>>>9)%3}};drawPerson(c,287+Math.round(Math.sin(time*.8+2)*4),119,1.12,guest,specificGuest?.age??(scene.environment==='classroom'?Math.max(5,Math.min(17,bio)):30),family.find(m=>m.name===specificGuest?.name)||specificGuest||{name:'ผู้สัญจร',look:guest.look,race:guest.race})}
+ const walking=!s.dead&&bio>=4&&['border','mountain','snowpass','forest','ruins','desert'].includes(scene.environment),step=walking?Math.round(Math.sin(time*1.15)*(bio>=60?11:25)):0;
  if(s.dead)drawRemembrance(c,219,139,1.3,s);else{actorWalking=walking;try{drawPerson(c,213+step,109,1.75,s,bio)}finally{actorWalking=false}}
- if(s.pet)drawPet(c,266+step,149,1.05,s.pet);
+ if(s.pet){const follow=walking?Math.round(Math.sin(time*1.15-.55)*(bio>=60?10:21)):Math.round(Math.sin(time*1.4)*3);drawPet(c,264+follow,149,1.05,s.pet);}
  purchasedDecor(c,s,scene,time);}
  if(['river-sanctuary','reef-home','open-ocean'].includes(scene.environment)){for(let i=0;i<12;i++)rect(c,(i*43+Math.floor(time*5))%480,157+i%3*6,24,1,'#a7d3bd25')}
  if(!scene.interior&&!(typeof Ecology!=='undefined'&&Ecology.nativeScenes.includes(scene.environment))){atmosphere(c,{...s,kingdom:scene.realm},time,true);if(/ฝน/.test(scene.season)){for(let i=0;i<27;i++){const x=(i*67+Math.floor(time*41))%480,y=(i*31+Math.floor(time*83))%180;rect(c,x,y,1,6,'#dfece080')}}}

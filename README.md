@@ -405,3 +405,12 @@ Validation: `node scripts/check-atlas-detail.cjs` verifies unchanged realm geome
 The live life scene adds deterministic pixel effects by setting: moving leaves and motes, water highlights, forge embers, magical sparks, domestic steam and windborne particles. Humanoid characters use a two-step gait while travelling; infant and small-child gait remains unchanged. Existing creature-specific rendering is preserved. Motion is presentation-only and does not advance time, change randomness or modify saves. The existing animation control, reduced-motion preference, viewport visibility and paused-clock behavior continue to apply.
 
 Validation: `scripts/check-pixel-motion.cjs` exercises seven environments, compares animated and repeated still frames, checks state immutability, reduced motion and toggle persistence in Chromium. Era and atlas regressions pass.
+
+
+### v40 — livelier scenes and a bounded life feed
+
+The life feed is a keyboard-focusable scrolling region sized to the viewport. It initially shows 30 retained entries, loads older pages inside the same box, and keeps the first visible entry in place when new entries arrive or the player loads more. Returning to the top shows new entries as they appear. The existing 360-entry diary retention limit applies.
+
+Pixel scenes add moving birds and clouds, larger walking cycles, gesturing arms and gentle movement of companions and pets. Visual animation can continue while simulation time is paused; the existing animation toggle, hidden-tab/viewport optimization and reduced-motion preference remain in force. Visual frames do not change state.
+
+Validation: `scripts/check-scroll-motion.cjs` checks reading position after a new event, pagination, scrolling to latest, four viewport widths and animation while time is paused; the existing pixel-motion, language, era and atlas checks also pass.
