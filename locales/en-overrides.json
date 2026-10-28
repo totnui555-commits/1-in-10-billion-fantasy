@@ -741,5 +741,8 @@
   "ชาวเกาะฝากเมล็ดอาหารไปกับทุกเรือกลับ": "Islanders send food seeds on every returning ship",
   "เว้นพื้นที่บนเรือให้ผู้ไม่มีค่าผ่านทาง": "Leave a berth for someone unable to pay passage",
   "กระแสน้ำอุ่นใหม่แยกฝูงออกจากแหล่งอาหาร": "A new warm current separates shoals from feeding grounds",
-  "เลื่อนดูเรื่องราวที่ผ่านมา": "Scroll through past life events"
+  "เลื่อนดูเรื่องราวที่ผ่านมา": "Scroll through past life events",
+  "ชีวิตที่เริ่มเล่นแล้ว ตั้งแต่ติดตั้งตัวนับ": "Lives started since the counter was installed",
+  "กำลังเชื่อมต่อสถิติ": "Connecting to the counter",
+  "ยังเชื่อมต่อสถิติไม่ได้": "Unable to connect to the counter"
 }

@@ -79,6 +79,7 @@
     "world-history.js",
     "birth-eras.js",
     "atlas-detail.js",
+    "birth-counter.js",
     "app.js"
   ],
   "styles": [

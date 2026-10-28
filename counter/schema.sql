@@ -1,0 +1,4 @@
+CREATE TABLE birth_events (
+  life_id TEXT PRIMARY KEY NOT NULL,
+  created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
