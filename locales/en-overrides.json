@@ -744,5 +744,15 @@
   "เลื่อนดูเรื่องราวที่ผ่านมา": "Scroll through past life events",
   "ชีวิตที่เริ่มเล่นแล้ว ตั้งแต่ติดตั้งตัวนับ": "Lives started since the counter was installed",
   "กำลังเชื่อมต่อสถิติ": "Connecting to the counter",
-  "ยังเชื่อมต่อสถิติไม่ได้": "Unable to connect to the counter"
+  "ยังเชื่อมต่อสถิติไม่ได้": "Unable to connect to the counter",
+  "สถิติผู้เล่นและชีวิตในโลกนี้": "Live world statistics",
+  "ออนไลน์ตอนนี้": "Online now",
+  "ชีวิตที่เกิดแล้ว": "Lives started",
+  "เรียลไทม์": "Live",
+  "กำลังเชื่อมต่อ": "Connecting",
+  "กำลังเชื่อมต่อใหม่": "Reconnecting",
+  "อัปเดตเป็นระยะ": "Updating periodically",
+  "ออฟไลน์": "Offline",
+  "นับเบราว์เซอร์ที่เปิดหน้าเกมอยู่ หลายแท็บในเบราว์เซอร์เดียวกันนับครั้งเดียว": "Counts browsers viewing the game. Multiple tabs in the same browser count once.",
+  "นับเมื่อกดใช้ชีวิตชาตินี้ เริ่มนับตั้งแต่ติดตั้งตัวนับ": "Counts accepted lives since the counter was installed."
 }

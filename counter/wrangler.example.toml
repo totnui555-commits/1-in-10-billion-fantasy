@@ -1,0 +1,14 @@
+# Copy outside the source checkout or substitute your EXISTING D1 identifier.
+name = "fantasy-life-birth-counter"
+main = "worker.mjs"
+compatibility_date = "2026-10-01"
+[[d1_databases]]
+binding = "DB"
+database_name = "fantasy-life-births"
+database_id = "EXISTING_DATABASE_ID"
+[[durable_objects.bindings]]
+name = "LIVE_STATS"
+class_name = "LiveStats"
+[[migrations]]
+tag = "live-stats-v1"
+new_sqlite_classes = ["LiveStats"]
